@@ -1,12 +1,8 @@
-FROM node:22-alpine AS deps
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-
 FROM node:22-alpine AS builder
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
-COPY --from=deps /app/node_modules ./node_modules
+COPY package*.json ./
+RUN npm install
 COPY . .
 ARG DATABASE_URL=postgresql://build:build@localhost:5432/build
 ARG BETTER_AUTH_SECRET=build-only-secret-build-only-secret-1234
