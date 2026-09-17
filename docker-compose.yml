@@ -13,17 +13,38 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-  web:
-    build: .
-    restart: unless-stopped
+
+  migrate:
+    build:
+      context: .
+      target: migrator
     depends_on:
       db:
         condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://leihnest:${POSTGRES_PASSWORD}@db:5432/leihnest
+    restart: "no"
+
+  web:
+    build:
+      context: .
+      target: runner
+    restart: unless-stopped
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
     environment:
       DATABASE_URL: postgresql://leihnest:${POSTGRES_PASSWORD}@db:5432/leihnest
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?set BETTER_AUTH_SECRET}
       BETTER_AUTH_URL: ${BETTER_AUTH_URL:-https://leihnest.de}
     ports:
       - "3000:3000"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1:3000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
 volumes:
   leihnest-db:
