@@ -1,0 +1,29 @@
+{% macro icon(name, cls='') -%}<svg class="icon {{ cls }}" aria-hidden="true"><use href="/static/icons.svg#{{ name }}"></use></svg>{%- endmacro %}
+{% macro csrf_field() -%}<input type="hidden" name="csrf" value="{{ csrf }}">{%- endmacro %}
+{% macro item_art(item) -%}
+{% from 'illustrations.html' import object_illustration %}
+<div class="item-art category-{{ item.category }}">
+{% if item.photo %}<img src="/g/{{ group.id }}/media/{{ item.photo }}" alt="{{ item.name }}" loading="lazy">{% else %}{{ object_illustration(item.category) }}<span class="photo-placeholder-label">{{ t('no_photo') }}</span>{% endif %}
+</div>
+{%- endmacro %}
+{% macro item_card(item) -%}
+<a class="item-card" href="/g/{{ group.id }}/items/{{ item.id }}">
+<div class="item-visual">{{ item_art(item) }}<span class="badge image-badge {{ 'green' if item.available else 'amber' }}">{{ icon('dot') }} {{ t('available') if item.available else t('unavailable') }}</span></div>
+<div class="item-card-body"><span class="eyebrow small">{{ t(item.category) }}</span><h3>{{ item.name }}</h3><p class="muted location">{{ icon('pin') }} {{ item.location or t('not_provided') }}</p><div class="card-bottom"><span><strong>{{ item.available }}</strong> {{ t('of') }} {{ item.quantity }} {{ t('units') }}</span>{{ icon('arrow') }}</div></div></a>
+{%- endmacro %}
+{% macro status_badge(b) -%}<span class="badge {{ 'amber' if b.status=='requested' or (b.status=='borrowed' and b.end_at<now) else 'green' if b.status in ('confirmed','returned') else 'blue' if b.status=='borrowed' else 'neutral' }}">{{ t('overdue') if b.status=='borrowed' and b.end_at<now else t(b.status) }}</span>{%- endmacro %}
+{% macro booking_list(rows, actions=false) -%}
+{% if not rows %}<div class="empty compact">{{ icon('calendar','empty-icon') }}<h3>{{ t('no_bookings') }}</h3><p>{{ t('no_bookings_desc') }}</p><a class="text-link" href="/g/{{ group.id }}/items">{{ t('inventory') }} {{ icon('arrow') }}</a></div>{% else %}
+<div class="booking-list">{% for b in rows %}<article class="booking-row">
+<div class="booking-main"><span class="mini-art category-{{ b.category }}">{{ icon({'outdoor':'tent','tech':'speaker','events':'party','sport':'ball','tools':'wrench','other':'box'}[b.category]) }}</span><div><a class="strong-link" href="/g/{{ group.id }}/items/{{ b.item_id }}">{{ b.name }}</a><div class="muted tiny">{{ b.borrower }} &middot; {{ b.quantity }} {{ t('units') }}</div></div></div>
+<div class="booking-dates"><span>{{ date(b.start_at) }}</span><span class="muted tiny">{{ t('end_at') }}: {{ date(b.end_at) }}</span></div>
+<div>{{ status_badge(b) }}</div>
+{% if actions %}<div class="booking-actions">
+{% if group.role!='member' and b.status=='requested' %}<form method="post" action="/g/{{ group.id }}/bookings/{{ b.id }}/approve">{{ csrf_field() }}<button class="btn btn-small" type="submit">{{ t('approve') }}</button></form>{% endif %}
+{% if group.role!='member' and b.status=='confirmed' %}<form method="post" action="/g/{{ group.id }}/bookings/{{ b.id }}/issue" data-confirm="{{ t('confirm_action') }}">{{ csrf_field() }}<button class="btn btn-small" type="submit">{{ icon('arrow') }}{{ t('issue') }}</button></form>{% endif %}
+{% if group.role!='member' and b.status=='borrowed' %}<form class="return-form" method="post" action="/g/{{ group.id }}/bookings/{{ b.id }}/return">{{ csrf_field() }}<label class="sr-only" for="qty-{{ b.id }}">{{ t('return_quantity') }}: {{ b.name }}</label><input id="qty-{{ b.id }}" type="number" name="quantity" min="1" max="{{ b.quantity-b.returned }}" value="{{ b.quantity-b.returned }}" required><button class="btn btn-small" type="submit">{{ t('return') }}</button><span class="tiny muted">{{ t('remaining') }}: {{ b.quantity-b.returned }}</span></form>{% endif %}
+{% if b.status in ('requested','confirmed') and (group.role!='member' or b.user_id==user.id) %}<form method="post" action="/g/{{ group.id }}/bookings/{{ b.id }}/cancel" data-confirm="{{ t('confirm_action') }}">{{ csrf_field() }}<button class="btn btn-small btn-quiet danger-text" type="submit">{{ t('cancel') }}</button></form>{% endif %}
+</div>{% endif %}
+{% if b.note %}<p class="booking-note tiny">{{ b.note }}</p>{% endif %}
+</article>{% endfor %}</div>{% endif %}
+{%- endmacro %}
