@@ -1,6 +1,7 @@
 services:
   web:
     build: .
+    container_name: leihnest-web
     restart: unless-stopped
     init: true
     environment:
@@ -19,6 +20,8 @@ services:
       MAIL_FROM: ${MAIL_FROM:-}
     ports:
       - "127.0.0.1:8086:8000"
+    networks:
+      - frontend
     volumes:
       - leihnest-data:/data
     read_only: true
@@ -37,3 +40,8 @@ services:
 
 volumes:
   leihnest-data:
+
+networks:
+  frontend:
+    external: true
+    name: kamilunavo-infrastructure_frontend
