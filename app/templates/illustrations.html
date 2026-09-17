@@ -1,0 +1,70 @@
+{# Original vector artwork. Decorative category illustrations, never item photographs. #}
+{% macro gazebo() -%}
+<ellipse cx="178" cy="233" rx="142" ry="15" fill="#203729" opacity=".11"/>
+<path d="M62 109h9v122h-9zM280 109h9v122h-9z" fill="#485b4b"/><path d="M79 113h5v101h-5zM263 113h5v101h-5z" fill="#81917d"/>
+<path d="M30 105 177 25l150 80z" fill="#314f3d"/><path d="m30 105 147-80-56 80z" fill="#6f916d"/><path d="m121 105 56-80 59 80z" fill="#9cb584"/><path d="M236 105 177 25l150 80z" fill="#46694c"/>
+<path d="M30 105h297v20H30z" fill="#294a37"/><path d="M30 105h91v20H30z" fill="#5c825b"/><path d="M121 105h115v20H121z" fill="#85a477"/>
+<path d="M72 124h3v109h-3M272 124h3v109h-3" fill="#dde1ca"/><path d="M69 213h214" stroke="#526c50" stroke-width="3"/>
+<path d="m49 105 29 91M304 105l-28 91" stroke="#acbba0" stroke-width="1.5"/>
+{%- endmacro %}
+{% macro speaker() -%}
+<ellipse cx="180" cy="237" rx="94" ry="15" fill="#203729" opacity=".12"/>
+<path d="M138 50v-8c0-34 85-34 85 0v8" fill="none" stroke="#374533" stroke-width="13"/>
+<rect x="117" y="39" width="129" height="195" rx="27" fill="#364635"/><path d="M132 43h81c14 0 20 8 20 22v144c0 14-7 20-20 20h-81c-14 0-22-10-22-25V69c0-17 7-26 22-26z" fill="#788472"/>
+<rect x="121" y="67" width="104" height="138" rx="12" fill="#4e5e49"/>
+{% for x in range(129,220,7) %}{% for y in range(75,201,7) %}<circle cx="{{ x }}" cy="{{ y }}" r="1.2" fill="#b0b7a0" opacity=".6"/>{% endfor %}{% endfor %}
+<circle cx="146" cy="54" r="3" fill="#d0ef83"/><path d="M168 55h27" stroke="#d4d5b5" stroke-width="3" stroke-linecap="round"/>
+<rect x="165" y="214" width="22" height="4" rx="2" fill="#dedac0"/>
+{%- endmacro %}
+{% macro games() -%}
+<ellipse cx="180" cy="230" rx="119" ry="14" fill="#3d3e25" opacity=".12"/>
+<path d="m63 118 99-35 135 38-105 44z" fill="#d5bc80"/><path d="m63 118 129 47v69L63 186z" fill="#bc9058"/><path d="m192 165 105-44v66l-105 47z" fill="#98733f"/>
+<path d="m78 107 63-15 95 36-64 17z" fill="#a65135"/><path d="m78 91 63-16 95 36-64 17z" fill="#e79568"/><path d="M78 91v16l94 38v-17z" fill="#bc6645"/>
+<path d="m102 79 95-29 66 25-91 30z" fill="#e3e8ba"/><path d="M102 79v17l70 27v-18z" fill="#bec990"/><path d="m172 105 91-30v17l-91 31z" fill="#889969"/>
+<path d="m136 68 63-12 34 13-61 18z" fill="#597755"/>
+<rect x="108" y="165" width="46" height="24" rx="4" transform="rotate(20 108 165)" fill="#e9d8b6"/>
+<path d="m122 179 21 7" stroke="#826241" stroke-width="3" stroke-linecap="round"/>
+{%- endmacro %}
+{% macro chair() -%}
+<ellipse cx="186" cy="240" rx="107" ry="12" fill="#443a26" opacity=".12"/>
+<path d="m95 231 108-132M214 235 99 92M269 224 219 92M148 219l98-133" fill="none" stroke="#526251" stroke-width="8" stroke-linecap="round"/>
+<path d="m82 48 119-12 13 102-119 11z" fill="#df9568"/><path d="m99 49 84-9 11 91-82 9z" fill="#ecc195"/><path d="m95 149 119-11 54 37-122 20z" fill="#bd704d"/><path d="m109 151 97-8 38 26-93 16z" fill="#e6ab7d"/>
+<path d="m81 134 16-2M207 124l42-6M111 172l36-4" fill="none" stroke="#263e31" stroke-width="8" stroke-linecap="round"/>
+<path d="M92 39 206 27" stroke="#d7b090" stroke-width="5" stroke-linecap="round"/>
+{%- endmacro %}
+{% macro toolbox() -%}
+<ellipse cx="180" cy="232" rx="124" ry="14" fill="#373326" opacity=".12"/>
+<path d="M134 85V63c0-20 89-20 89 0v20" fill="none" stroke="#344f3b" stroke-width="10"/>
+<path d="M64 114 234 86l60 27v102l-173 23-57-31z" fill="#7b9364"/><path d="m121 143 173-30v102l-173 23z" fill="#486341"/><path d="m64 114 170-28 60 27-173 30z" fill="#aabe8b"/>
+<path d="M64 147 121 177l173-31" fill="none" stroke="#273e2d" stroke-width="5"/>
+<path d="m141 160 15-3v26l-15 3M255 140l15-3v26l-15 3" fill="#e1dcb3"/>
+{%- endmacro %}
+{% macro plain_box() -%}
+<ellipse cx="180" cy="233" rx="114" ry="14" fill="#4f3f27" opacity=".1"/>
+<path d="m65 108 122-48 111 52-125 51z" fill="#ebc995"/><path d="m65 108 108 55v77L65 184z" fill="#d3a268"/><path d="m173 163 125-51v79l-125 49z" fill="#b77e43"/>
+<path d="m114 90 107 53v77l-27 11v-78L90 101z" fill="#f0e4bc" opacity=".8"/>
+<rect x="208" y="163" width="56" height="32" rx="3" transform="skewY(-22) translate(0 80)" fill="#ead7ae"/>
+{%- endmacro %}
+{% macro object_illustration(category) -%}
+<svg class="category-illustration" viewBox="0 0 360 270" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">{% if category=='outdoor' %}{{ gazebo() }}{% elif category=='tech' %}{{ speaker() }}{% elif category=='sport' %}{{ games() }}{% elif category=='events' %}{{ chair() }}{% elif category=='tools' %}{{ toolbox() }}{% else %}{{ plain_box() }}{% endif %}</svg>
+{%- endmacro %}
+{% macro still_life() -%}
+<svg class="still-life" viewBox="0 0 620 535" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+<path d="M0 0h620v535H0z" fill="#e4e5c9"/>
+<path d="M0 330 310 227l310 88v220H0z" fill="#d6d9b6"/>
+<path d="M375 0h245v198H375z" fill="#b1c290"/>
+<path d="M0 330 310 227v308H0z" fill="#ece7d0"/>
+<path d="M76 0v340M374 0v247" stroke="#fbf6e2" stroke-width="2" opacity=".65"/>
+<circle cx="542" cy="85" r="53" fill="#e8edcc"/>
+<path d="M530 70h24M542 58v24" stroke="#73885c" stroke-width="2"/>
+<g transform="translate(2 5) scale(1.15)">{{ gazebo() }}</g>
+<g transform="translate(278 195) scale(.87)">{{ chair() }}</g>
+<g transform="translate(103 286) scale(.8)">{{ speaker() }}</g>
+<g transform="translate(362 308) scale(.67)">{{ games() }}</g>
+<path d="M45 406c-15-20-28-18-31-13-4 6 5 17 23 13M44 407c-5-28 1-41 8-39 8 2 7 15-8 39M44 404v72" fill="#78925c" stroke="#78925c" stroke-width="3"/>
+<path d="M18 447h54l-8 49H28z" fill="#bd7954"/>
+<path d="M18 447h54v9H18z" fill="#d99b72"/>
+<path d="M475 466h94" stroke="#374f31" stroke-width="1"/>
+<circle cx="477" cy="466" r="3" fill="#374f31"/>
+</svg>
+{%- endmacro %}
