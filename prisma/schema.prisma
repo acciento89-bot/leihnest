@@ -7,8 +7,19 @@ datasource db {
   provider = "postgresql"
 }
 
-enum GroupRole { OWNER ADMIN MEMBER }
-enum ReservationStatus { PENDING APPROVED REJECTED HANDED_OUT RETURNED CANCELLED }
+enum GroupRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+enum ReservationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  HANDED_OUT
+  RETURNED
+  CANCELLED
+}
 
 model User {
   id            String       @id
@@ -146,3 +157,4 @@ model Reservation {
   @@index([itemId, startsAt, endsAt])
   @@index([groupId, status])
 }
+
