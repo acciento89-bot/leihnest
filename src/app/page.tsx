@@ -12,7 +12,7 @@ export default function Home() {
     <main className="min-h-screen overflow-x-hidden">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
         <Link href="/" className="flex items-center gap-3 text-xl font-bold"><span className="grid h-10 w-10 place-items-center rounded-2xl bg-[var(--brand)] text-white">L</span>LeihNest</Link>
-        <nav className="flex items-center gap-3"><a className="hidden sm:block" href="#funktionen">Funktionen</a><Link className="rounded-xl border border-[var(--line)] bg-white px-4 py-2" href="/login">Anmelden</Link></nav>
+        <nav className="flex items-center gap-3"><a className="hidden sm:block" href="#funktionen">Funktionen</a><Link className="hidden sm:block" href="/kontakt">Kontakt</Link><Link className="rounded-xl border border-[var(--line)] bg-white px-4 py-2" href="/login">Anmelden</Link></nav>
       </header>
 
       <section className="mx-auto grid max-w-6xl gap-12 px-6 pb-20 pt-14 lg:grid-cols-2 lg:items-center">
@@ -23,6 +23,13 @@ export default function Home() {
       <section id="funktionen" className="border-y border-[var(--line)] bg-white"><div className="mx-auto max-w-6xl px-6 py-20"><p className="text-center font-semibold text-[var(--brand)]">Ein Ablauf statt fünf Listen</p><h2 className="mx-auto mt-3 max-w-2xl text-center text-3xl font-bold">Vom Gegenstand bis zur Rückgabe</h2><div className="mt-12 grid gap-5 md:grid-cols-3">{[["01", "Erfassen", "Gegenstände, Stückzahlen, Zubehör und Lagerort zentral pflegen."],["02", "Reservieren", "Zeitraum und Menge wählen. LeihNest prüft die echte Verfügbarkeit."],["03", "Zurückgeben", "Übergabe und Rückgabe dokumentieren. Überfälliges bleibt sichtbar."]].map(([n,t,d]) => <article key={n} className="rounded-3xl bg-[var(--background)] p-7"><span className="font-bold text-[var(--brand)]">{n}</span><h3 className="mt-5 text-xl font-bold">{t}</h3><p className="mt-3 leading-7 text-[var(--muted)]">{d}</p></article>)}</div></div></section>
 
       <section className="mx-auto max-w-6xl px-6 py-20"><div className="rounded-[2rem] bg-[var(--foreground)] px-7 py-12 text-center text-white sm:px-12"><h2 className="text-3xl font-bold">Eure Sachen. Euer LeihNest.</h2><p className="mx-auto mt-4 max-w-xl text-white/70">Startet mit einer Gruppe und bringt Ordnung in gemeinsame Ausrüstung – ohne öffentlichen Marktplatz und ohne komplizierte Verwaltung.</p><Link href="/register" className="mt-7 inline-block rounded-xl bg-white px-6 py-3 font-semibold text-[var(--foreground)]">LeihNest anlegen</Link></div></section>
+
+      <footer className="border-t border-[var(--line)] bg-white">
+        <div className="mx-auto flex max-w-6xl flex-col gap-5 px-6 py-8 text-sm text-[var(--muted)] sm:flex-row sm:items-center sm:justify-between">
+          <p>© 2026 Kamilunavo · LeihNest</p>
+          <nav className="flex flex-wrap gap-x-5 gap-y-2 font-semibold text-[var(--foreground)]"><Link href="/kontakt">Kontakt</Link><Link href="/impressum">Impressum</Link><Link href="/datenschutz">Datenschutz</Link></nav>
+        </div>
+      </footer>
     </main>
   );
 }
