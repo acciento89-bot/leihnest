@@ -8,6 +8,13 @@ export const dictionaries = {
     contact: "Kontakt",
     imprint: "Impressum",
     privacy: "Datenschutz",
+    dashboard: "Übersicht",
+    items: "Gegenstände",
+    reservations: "Reservierungen",
+    members: "Mitglieder",
+    settings: "Einstellungen",
+    returnNote: "Rückgabehinweis",
+    confirmReturn: "Rückgabe bestätigen",
   },
   en: {
     appName: "LeihNest",
@@ -18,6 +25,13 @@ export const dictionaries = {
     contact: "Contact",
     imprint: "Imprint",
     privacy: "Privacy",
+    dashboard: "Overview",
+    items: "Items",
+    reservations: "Reservations",
+    members: "Members",
+    settings: "Settings",
+    returnNote: "Return note",
+    confirmReturn: "Confirm return",
   },
 } as const;
 
