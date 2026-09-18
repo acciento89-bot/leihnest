@@ -19,6 +19,7 @@ services:
     build:
       context: .
       target: migrator
+    pull_policy: build
     container_name: leihnest-migrate
     depends_on:
       db:
@@ -31,6 +32,7 @@ services:
     build:
       context: .
       target: runner
+    pull_policy: build
     container_name: leihnest-web
     restart: unless-stopped
     depends_on:
