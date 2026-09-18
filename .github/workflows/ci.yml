@@ -19,6 +19,18 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Prepare offline verification workspace
+        if: github.ref == 'refs/heads/feat/member-experience-20260918'
+        run: |
+          npm run db:generate
+          tar --exclude=.git --exclude=.next --exclude=.env --exclude=.env.local -czf /tmp/leihnest-workspace.tar.gz .
+      - uses: actions/upload-artifact@v4
+        if: github.ref == 'refs/heads/feat/member-experience-20260918'
+        with:
+          name: leihnest-offline-workspace
+          path: /tmp/leihnest-workspace.tar.gz
+          retention-days: 1
+          compression-level: 0
       - name: Report dependency audit
         run: npm audit --omit=dev || true
       - name: Block critical production dependency vulnerabilities
