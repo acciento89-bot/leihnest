@@ -104,7 +104,13 @@ export async function reservationAction(formData: FormData) {
   } else if (action === "cancel") {
     await cancelReservation(membership.groupId, userId, reservationId);
   } else if (action === "reject" || action === "handover" || action === "return") {
-    await transitionReservation(membership.groupId, userId, reservationId, action);
+    await transitionReservation(
+      membership.groupId,
+      userId,
+      reservationId,
+      action,
+      action === "return" ? formData.get("returnNote") : undefined
+    );
   }
 
   revalidatePath("/app");
