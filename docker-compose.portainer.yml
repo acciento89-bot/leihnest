@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_DB: leihnest
       POSTGRES_USER: leihnest
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-${SECRET_KEY:?set POSTGRES_PASSWORD or existing SECRET_KEY}}
     volumes:
       - leihnest-db:/var/lib/postgresql/data
     healthcheck:
@@ -24,29 +24,35 @@ services:
       db:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgresql://leihnest:${POSTGRES_PASSWORD}@db:5432/leihnest
+      DATABASE_URL: postgresql://leihnest:${POSTGRES_PASSWORD:-${SECRET_KEY:?set POSTGRES_PASSWORD or existing SECRET_KEY}}@db:5432/leihnest
     restart: "no"
 
   web:
     build:
       context: .
       target: runner
-    container_name: leihnest
+    container_name: leihnest-web
     restart: unless-stopped
     depends_on:
       migrate:
         condition: service_completed_successfully
     environment:
-      DATABASE_URL: postgresql://leihnest:${POSTGRES_PASSWORD}@db:5432/leihnest
-      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?set BETTER_AUTH_SECRET}
-      BETTER_AUTH_URL: ${BETTER_AUTH_URL:-https://leihnest.de}
+      DATABASE_URL: postgresql://leihnest:${POSTGRES_PASSWORD:-${SECRET_KEY:?set POSTGRES_PASSWORD or existing SECRET_KEY}}@db:5432/leihnest
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL:-}
+      SECRET_KEY: ${SECRET_KEY:-}
+      PUBLIC_URL: ${PUBLIC_URL:-https://leihnest.de}
+      PORT: "8000"
+      HOSTNAME: "0.0.0.0"
+    ports:
+      - "127.0.0.1:8086:8000"
     expose:
-      - "3000"
+      - "8000"
     networks:
       - default
       - frontend
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1:3000/api/health"]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1:8000/api/health"]
       interval: 30s
       timeout: 5s
       retries: 3
