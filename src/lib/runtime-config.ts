@@ -1,9 +1,4 @@
-type AuthRuntimeEnv = {
-  BETTER_AUTH_SECRET?: string;
-  BETTER_AUTH_URL?: string;
-  SECRET_KEY?: string;
-  PUBLIC_URL?: string;
-};
+type AuthRuntimeEnv = Record<string, string | undefined>;
 
 export function resolveAuthRuntimeConfig(env: AuthRuntimeEnv) {
   return {
