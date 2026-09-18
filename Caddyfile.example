@@ -1,4 +1,4 @@
 leihnest.de, www.leihnest.de {
     encode zstd gzip
-    reverse_proxy leihnest:3000
+    reverse_proxy leihnest-web:8000
 }
