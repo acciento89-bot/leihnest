@@ -23,9 +23,11 @@ The existing Portainer interface is preserved:
 - host compatibility binding: `127.0.0.1:8086`
 - frontend network: `kamilunavo-infrastructure_frontend`
 
-The new stack reuses the existing `SECRET_KEY` and `PUBLIC_URL` variables as Better Auth fallbacks. `POSTGRES_PASSWORD`, `BETTER_AUTH_SECRET` and `BETTER_AUTH_URL` remain supported as explicit overrides. If `POSTGRES_PASSWORD` is absent, the existing URL-safe `SECRET_KEY` is reused for the private PostgreSQL container.
+The repository-built `migrate` and `web` services use `pull_policy: build`. When Portainer detects a new Git commit and runs the Compose update, Docker Compose rebuilds both repository-built images even when an older local image already exists. This keeps GitOps releases tied to the checked-out source instead of silently reusing the previous application image.
 
-PostgreSQL uses a new `leihnest-db` volume. The legacy `leihnest-data` SQLite volume is not removed by this deployment, so the previous pilot data remains available for rollback/migration.
+The stack reuses the existing `SECRET_KEY` and `PUBLIC_URL` variables as Better Auth fallbacks. `POSTGRES_PASSWORD`, `BETTER_AUTH_SECRET` and `BETTER_AUTH_URL` remain supported as explicit overrides. If `POSTGRES_PASSWORD` is absent, the existing URL-safe `SECRET_KEY` is reused for the private PostgreSQL container.
+
+PostgreSQL uses a `leihnest-db` volume. The legacy `leihnest-data` SQLite volume is not removed by this deployment, so previous pilot data remains available for rollback/migration.
 
 ## Local development
 
@@ -53,7 +55,7 @@ docker build -t leihnest:release .
 1. The verified release is integrated on `main`.
 2. The previous `portainer-preview` head is retained on a dedicated legacy branch before updating the deployment ref.
 3. `portainer-preview` is moved to the verified release commit.
-4. Portainer pulls/redeploys the existing stack without changing its Git branch or Compose path.
+4. Portainer detects the Git change and Compose rebuilds the local `migrate` and `web` images because of `pull_policy: build`.
 5. `https://leihnest.de/api/health` must return HTTP 200 after rollout.
 6. Registration, login, group creation, inventory, invitation acceptance and reservation → approval → handover → return are smoke-tested over HTTPS.
 
