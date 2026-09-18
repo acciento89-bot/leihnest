@@ -5,10 +5,15 @@ import { getPrimaryMembership } from "@/features/groups/group-service";
 import { canManageReservations, type GroupRole } from "@/features/groups/permissions";
 import { createReservationAction, reservationAction } from "../actions";
 
-export default async function ReservationsPage() {
+type ReservationsPageProps = {
+  searchParams: Promise<{ error?: string }>;
+};
+
+export default async function ReservationsPage({ searchParams }: ReservationsPageProps) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) return null;
 
+  const { error } = await searchParams;
   const membership = await getPrimaryMembership(session.user.id);
   if (!membership) return <p>Bitte zuerst eine Gruppe erstellen.</p>;
 
@@ -30,6 +35,12 @@ export default async function ReservationsPage() {
   return (
     <section>
       <h1 className="text-4xl font-bold">Reservierungen</h1>
+
+      {error && (
+        <p role="alert" className="mt-5 rounded-xl bg-red-50 p-4 text-sm font-medium text-red-700">
+          {error}
+        </p>
+      )}
 
       <form action={createReservationAction} className="mt-8 grid gap-3 rounded-2xl border border-[var(--line)] bg-white p-5 md:grid-cols-2">
         <select name="itemId" required className="rounded-xl border p-3">
