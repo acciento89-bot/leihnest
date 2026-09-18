@@ -18,11 +18,16 @@ Next.js 16, React 19, TypeScript, Better Auth, Prisma 7, PostgreSQL 17, Tailwind
 
 ## Production deployment with Portainer
 
-Create a **Git Stack** from:
+LeihNest production is managed by the **existing Portainer stack/reference** on `panel.kamilunavo.com`.
 
-- Repository: `https://github.com/acciento89-bot/leihnest.git`
-- Branch: `main`
-- Compose path: `docker-compose.portainer.yml`
+**Do not repoint Portainer to GitHub `main`.** The repository/ref already configured in Portainer is the authoritative production source. `main` in this GitHub repository is the integrated source branch, not the Portainer deployment reference.
+
+The production source must contain:
+
+- `docker-compose.portainer.yml`
+- `Dockerfile`
+- `prisma/`
+- the complete application source at release `v1.0.0` / commit `7ec73a716a102a6adfbf45ce4b925845cfbd5c4c`
 
 Required stack variables:
 
@@ -35,7 +40,7 @@ PROXY_NETWORK=kamilunavo-infrastructure_frontend
 
 The stack creates PostgreSQL with a persistent volume, runs `prisma migrate deploy` once, then starts the web container only after migration succeeds. The web service joins the existing Kamilunavo frontend network as container `leihnest`.
 
-Add the contents of `Caddyfile.example` to the central Caddy configuration and validate/reload Caddy. Both `leihnest.de` and `www.leihnest.de` resolve to the production server.
+The central Caddy route must proxy `leihnest.de` and `www.leihnest.de` to `leihnest:3000`. The prepared route is in `Caddyfile.example`.
 
 ## Direct Docker Compose deployment
 
@@ -60,11 +65,13 @@ docker build -t leihnest:release .
 
 ## Public launch checklist
 
+- Keep the existing Portainer repository/reference; do not switch it to GitHub `main`.
+- Sync release `v1.0.0` / commit `7ec73a716a102a6adfbf45ce4b925845cfbd5c4c` into the configured production source.
 - Configure the Portainer stack variables above.
 - Configure PostgreSQL backups and retention.
-- Deploy the Git Stack and verify the migration service completes successfully.
-- Add/reload the Caddy route.
-- Verify `https://leihnest.de/api/health`.
+- Pull/redeploy the existing LeihNest stack and verify the migration service completes successfully.
+- Validate/reload the central Caddy route.
+- Verify `https://leihnest.de/api/health` returns HTTP 200.
 - Verify `https://www.leihnest.de` redirects/serves correctly over HTTPS.
 - Smoke-test registration, login, group creation, item creation/edit/archive, member invitation acceptance and the complete reservation → approval → handover → return workflow.
 - Verify Impressum, Datenschutz and Kontakt pages are publicly reachable.
