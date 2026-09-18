@@ -6,6 +6,8 @@ const PUBLIC_ERRORS: Record<string, string> = {
   FORBIDDEN: "Dafür hast du keine Berechtigung.",
   NOT_FOUND: "Der angeforderte Eintrag wurde nicht gefunden.",
   INVALID_STATE: "Diese Aktion ist im aktuellen Status nicht möglich.",
+  INVITATION_INVALID: "Diese Einladung ist ungültig oder abgelaufen.",
+  INVITATION_EMAIL_MISMATCH: "Diese Einladung gehört zu einer anderen E-Mail-Adresse.",
 };
 
 export function toActionError(error: unknown) {
