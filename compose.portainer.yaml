@@ -1,0 +1,67 @@
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: leihnest-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: leihnest
+      POSTGRES_USER: leihnest
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-${SECRET_KEY:?set POSTGRES_PASSWORD or existing SECRET_KEY}}
+    volumes:
+      - leihnest-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U leihnest -d leihnest"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  migrate:
+    build:
+      context: .
+      target: migrator
+    container_name: leihnest-migrate
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://leihnest:${POSTGRES_PASSWORD:-${SECRET_KEY:?set POSTGRES_PASSWORD or existing SECRET_KEY}}@db:5432/leihnest
+    restart: "no"
+
+  web:
+    build:
+      context: .
+      target: runner
+    container_name: leihnest-web
+    restart: unless-stopped
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: postgresql://leihnest:${POSTGRES_PASSWORD:-${SECRET_KEY:?set POSTGRES_PASSWORD or existing SECRET_KEY}}@db:5432/leihnest
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL:-}
+      SECRET_KEY: ${SECRET_KEY:-}
+      PUBLIC_URL: ${PUBLIC_URL:-https://leihnest.de}
+      PORT: "8000"
+      HOSTNAME: "0.0.0.0"
+    ports:
+      - "127.0.0.1:8086:8000"
+    expose:
+      - "8000"
+    networks:
+      - default
+      - frontend
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1:8000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+volumes:
+  leihnest-db:
+
+networks:
+  frontend:
+    external: true
+    name: ${PROXY_NETWORK:-kamilunavo-infrastructure_frontend}
