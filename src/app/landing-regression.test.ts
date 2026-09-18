@@ -13,4 +13,20 @@ describe("landing page visual regressions", () => {
     expect(page).not.toContain("◫");
     expect(page).toContain("ItemIllustration");
   });
+
+  it("uses the approved duotone real-object illustration treatment", () => {
+    const illustration = readFileSync(
+      join(process.cwd(), "src/components/site/item-illustration.tsx"),
+      "utf8"
+    );
+    expect(illustration).toContain('data-visual-style="duotone-real-object"');
+    expect(illustration).toContain("fill");
+  });
+
+  it("includes the approved audience section", () => {
+    const page = readFileSync(join(process.cwd(), "src/app/page.tsx"), "utf8");
+    expect(page).toContain('id="zielgruppen"');
+    expect(page).toContain("Vereine");
+    expect(page).toContain("Hausgemeinschaften");
+  });
 });
