@@ -6,11 +6,13 @@ const read = (path: string) =>
   readFileSync(join(process.cwd(), path), "utf8");
 
 describe("Portainer Git release images", () => {
-  it("uses explicit versioned image tags for services built from the repository", () => {
+  it("forces repository-built services to rebuild on each GitOps update", () => {
     const compose = read("compose.portainer.yaml");
+    const buildPolicies = compose.match(/pull_policy:\s*build/g) ?? [];
 
-    expect(compose).toContain("image: leihnest-migrate:20260918-site-finish");
-    expect(compose).toContain("image: leihnest-web:20260918-site-finish");
+    expect(buildPolicies).toHaveLength(2);
+    expect(compose).toContain("target: migrator");
+    expect(compose).toContain("target: runner");
   });
 
   it("keeps the duplicate Portainer compose definition identical", () => {
@@ -19,9 +21,10 @@ describe("Portainer Git release images", () => {
     );
   });
 
-  it("documents that every source release must bump the local image tag", () => {
+  it("documents the GitOps rebuild policy", () => {
     const readme = read("README.md");
 
-    expect(readme).toContain("Bump both versioned local image tags");
+    expect(readme).toContain("pull_policy: build");
+    expect(readme).toContain("rebuilds both repository-built images");
   });
 });
