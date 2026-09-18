@@ -6,7 +6,7 @@ LeihNest is a German/English self-hosted web application for closed groups to ma
 
 ## Stack
 
-Next.js 16, React 19, TypeScript, Better Auth, Prisma 7, PostgreSQL 17, Tailwind CSS and Docker.
+Next.js 16, React 19, TypeScript, Better Auth, Prisma 7, PostgreSQL 17, Tailwind CSS, Docker and Portainer.
 
 ## Local development
 
@@ -16,20 +16,35 @@ Next.js 16, React 19, TypeScript, Better Auth, Prisma 7, PostgreSQL 17, Tailwind
 4. Run `npx prisma migrate dev`.
 5. Run `npm run dev`.
 
-## Production deployment
+## Production deployment with Portainer
 
-Set `POSTGRES_PASSWORD`, a cryptographically random `BETTER_AUTH_SECRET` of at least 32 characters and `BETTER_AUTH_URL=https://leihnest.de`.
+Create a **Git Stack** from:
 
-Then run:
+- Repository: `https://github.com/acciento89-bot/leihnest.git`
+- Branch: `main`
+- Compose path: `docker-compose.portainer.yml`
+
+Required stack variables:
+
+```text
+POSTGRES_PASSWORD=<long-random-password>
+BETTER_AUTH_SECRET=<at-least-32-random-characters>
+BETTER_AUTH_URL=https://leihnest.de
+PROXY_NETWORK=kamilunavo-infrastructure_frontend
+```
+
+The stack creates PostgreSQL with a persistent volume, runs `prisma migrate deploy` once, then starts the web container only after migration succeeds. The web service joins the existing Kamilunavo frontend network as container `leihnest`.
+
+Add the contents of `Caddyfile.example` to the central Caddy configuration and validate/reload Caddy. Both `leihnest.de` and `www.leihnest.de` resolve to the production server.
+
+## Direct Docker Compose deployment
+
+For a standalone host without the shared Kamilunavo proxy network:
 
 ```sh
 docker compose build
 docker compose up -d
 ```
-
-The Compose stack starts PostgreSQL, runs `prisma migrate deploy` in the one-shot `migrate` service, and only starts the web service after a successful migration. The web container exposes `/api/health` for health checks.
-
-Terminate TLS at the existing reverse proxy and forward HTTPS traffic for `leihnest.de` to port 3000. Do not expose PostgreSQL publicly.
 
 ## Release gates
 
@@ -39,16 +54,18 @@ npm test
 npm run lint
 npm run typecheck
 npm run build
+docker compose -f docker-compose.portainer.yml config
 docker build -t leihnest:release .
 ```
 
 ## Public launch checklist
 
-- Configure production secrets.
-- Configure database backups and retention.
-- Point `leihnest.de` at the production reverse proxy and enable HTTPS.
-- Run `docker compose up -d` and verify the migration service completes successfully.
+- Configure the Portainer stack variables above.
+- Configure PostgreSQL backups and retention.
+- Deploy the Git Stack and verify the migration service completes successfully.
+- Add/reload the Caddy route.
 - Verify `https://leihnest.de/api/health`.
+- Verify `https://www.leihnest.de` redirects/serves correctly over HTTPS.
 - Smoke-test registration, login, group creation, item creation/edit/archive, member invitation acceptance and the complete reservation → approval → handover → return workflow.
 - Verify Impressum, Datenschutz and Kontakt pages are publicly reachable.
 
