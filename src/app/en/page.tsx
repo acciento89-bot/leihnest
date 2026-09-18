@@ -6,7 +6,7 @@ import {
 } from "@/components/site/item-illustration";
 
 export const metadata: Metadata = {
-  title: "LeihNest – Share more. Organize less.",
+  title: "Share more. Organize less.",
   description:
     "Manage shared items, reservations, handovers and returns in one private group workspace.",
   alternates: {
