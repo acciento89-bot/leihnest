@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getPrimaryMembership } from "@/features/groups/group-service";
 import { canManageInventory, type GroupRole } from "@/features/groups/permissions";
+import { ItemIllustration } from "@/components/site/item-illustration";
 import { createItemAction, itemAction } from "../actions";
 
 export default async function ItemsPage() {
@@ -38,7 +39,10 @@ export default async function ItemsPage() {
       <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {items.map((item) => (
           <article key={item.id} className="rounded-2xl border border-[var(--line)] bg-white p-5">
-            <div className="mb-4 grid aspect-[16/8] place-items-center rounded-xl bg-[var(--surface-soft)] text-3xl">◫</div>
+            <div className="mb-4 grid aspect-[16/8] place-items-center rounded-xl bg-[var(--surface-soft)]">
+              <ItemIllustration kind="generic" />
+            </div>
+
             {manage ? (
               <form action={itemAction} className="grid gap-3">
                 <input type="hidden" name="itemId" value={item.id} />
@@ -60,6 +64,7 @@ export default async function ItemsPage() {
                 <h2 className="text-lg font-bold">{item.name}</h2>
                 <p className="mt-2 text-sm text-[var(--brand)]">{item.totalQuantity} Stück</p>
                 <p className="text-sm text-[var(--muted)]">{item.location || "Kein Lagerort"}</p>
+                {item.description && <p className="mt-3 text-sm leading-6 text-[var(--muted)]">{item.description}</p>}
               </>
             )}
           </article>
