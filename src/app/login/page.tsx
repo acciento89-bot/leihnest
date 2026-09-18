@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { AuthForm } from "@/components/auth/auth-form";
 import { safeNextPath } from "@/features/auth/safe-next-path";
+
+export const metadata: Metadata = {
+  title: "Anmelden",
+  robots: { index: false, follow: false },
+};
 
 type LoginPageProps = {
   searchParams: Promise<{ next?: string; lang?: string }>;
