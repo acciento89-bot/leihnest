@@ -10,7 +10,8 @@ jobs:
       DATABASE_URL: postgresql://build:build@localhost:5432/build
       BETTER_AUTH_SECRET: build-only-secret-build-only-secret-1234
       BETTER_AUTH_URL: http://localhost:3000
-      POSTGRES_PASSWORD: build-only-postgres-password
+      SECRET_KEY: legacy-portainer-build-secret-1234567890
+      PUBLIC_URL: https://leihnest.de
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -22,5 +23,6 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run build
-      - run: docker compose -f docker-compose.portainer.yml config
+      - run: cmp compose.portainer.yaml docker-compose.portainer.yml
+      - run: docker compose -f compose.portainer.yaml config
       - run: docker build -t leihnest:ci .
