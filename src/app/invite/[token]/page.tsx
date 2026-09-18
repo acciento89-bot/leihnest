@@ -5,10 +5,12 @@ import { acceptInvitationAction } from "./actions";
 
 type InvitePageProps = {
   params: Promise<{ token: string }>;
+  searchParams: Promise<{ error?: string }>;
 };
 
-export default async function InvitePage({ params }: InvitePageProps) {
+export default async function InvitePage({ params, searchParams }: InvitePageProps) {
   const { token } = await params;
+  const { error } = await searchParams;
   const session = await auth.api.getSession({ headers: await headers() });
   const next = `/invite/${token}`;
 
@@ -20,6 +22,12 @@ export default async function InvitePage({ params }: InvitePageProps) {
         <p className="mt-3 leading-7 text-[var(--muted)]">
           Diese Einladung ist an eine bestimmte E-Mail-Adresse gebunden und sieben Tage gültig.
         </p>
+
+        {error && (
+          <p role="alert" className="mt-5 rounded-xl bg-red-50 p-4 text-sm font-medium text-red-700">
+            {error}
+          </p>
+        )}
 
         {session ? (
           <form action={acceptInvitationAction.bind(null, token)} className="mt-8">

@@ -6,7 +6,7 @@ import { canInvite, type GroupRole } from "@/features/groups/permissions";
 import { createInvitationAction } from "../actions";
 
 type MembersPageProps = {
-  searchParams: Promise<{ invite?: string; joined?: string }>;
+  searchParams: Promise<{ invite?: string; joined?: string; error?: string }>;
 };
 
 export default async function MembersPage({ searchParams }: MembersPageProps) {
@@ -33,6 +33,12 @@ export default async function MembersPage({ searchParams }: MembersPageProps) {
         Lade Mitglieder per persönlichem Link ein. Einladungen sind sieben Tage gültig
         und an die angegebene E-Mail-Adresse gebunden.
       </p>
+
+      {params.error && (
+        <p role="alert" className="mt-6 rounded-xl bg-red-50 p-4 text-sm font-medium text-red-700">
+          {params.error}
+        </p>
+      )}
 
       {params.joined === "1" && (
         <p className="mt-6 rounded-xl bg-[var(--surface-soft)] p-4 font-medium text-[var(--brand-dark)]">
