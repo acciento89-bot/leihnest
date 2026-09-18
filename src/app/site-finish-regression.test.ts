@@ -36,6 +36,7 @@ describe("finished LeihNest public website", () => {
     expect(page).toContain('canonical: "/en"');
     expect(page).toContain('"de-DE": "/"');
     expect(page).toContain('"en": "/en"');
+    expect(page).toContain('title: "Share more. Organize less."');
   });
 
   it("keeps English users in English through the auth entry flow", () => {
@@ -53,5 +54,16 @@ describe("finished LeihNest public website", () => {
     expect(form).toContain('locale = "de"');
     expect(form).toContain('"Sign in"');
     expect(form).toContain('"Create account"');
+  });
+
+  it("keeps authentication pages out of the public search index", () => {
+    const sitemap = read("src/app/sitemap.ts");
+    const login = read("src/app/login/page.tsx");
+    const register = read("src/app/register/page.tsx");
+
+    expect(sitemap).not.toContain('"/login"');
+    expect(sitemap).not.toContain('"/register"');
+    expect(login).toContain("robots: { index: false, follow: false }");
+    expect(register).toContain("robots: { index: false, follow: false }");
   });
 });
