@@ -3,6 +3,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
+import { toActionError } from "@/features/actions/action-result";
 import { acceptInvitation } from "@/features/invitations/invitation-service";
 
 export async function acceptInvitationAction(token: string) {
@@ -12,6 +13,11 @@ export async function acceptInvitationAction(token: string) {
     redirect(`/login?next=${encodeURIComponent(`/invite/${token}`)}`);
   }
 
-  await acceptInvitation(token, session.user.id, session.user.email);
+  try {
+    await acceptInvitation(token, session.user.id, session.user.email);
+  } catch (error) {
+    redirect(`/invite/${token}?error=${encodeURIComponent(toActionError(error))}`);
+  }
+
   redirect("/app/members?joined=1");
 }
