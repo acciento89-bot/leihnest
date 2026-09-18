@@ -5,10 +5,15 @@ import { aggregateDashboard } from "@/features/dashboard/aggregate";
 import { getPrimaryMembership } from "@/features/groups/group-service";
 import { createGroupAction } from "./actions";
 
-export default async function Dashboard() {
+type DashboardProps = {
+  searchParams: Promise<{ error?: string }>;
+};
+
+export default async function Dashboard({ searchParams }: DashboardProps) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) return null;
 
+  const { error } = await searchParams;
   const membership = await getPrimaryMembership(session.user.id);
 
   if (!membership) {
@@ -19,6 +24,11 @@ export default async function Dashboard() {
         <p className="mt-4 text-[var(--muted)]">
           Danach kannst du Gegenstände erfassen und Mitglieder einladen.
         </p>
+        {error && (
+          <p role="alert" className="mt-5 rounded-xl bg-red-50 p-4 text-sm font-medium text-red-700">
+            {error}
+          </p>
+        )}
         <form action={createGroupAction} className="mt-8 flex gap-3">
           <input
             name="name"
@@ -44,7 +54,6 @@ export default async function Dashboard() {
   ]);
 
   const summary = aggregateDashboard(reservations);
-
   const cards = [
     ["Gegenstände", items],
     ["Offene Anfragen", summary.pending],
@@ -57,6 +66,11 @@ export default async function Dashboard() {
     <section>
       <p className="font-semibold text-[var(--brand)]">{membership.group.name}</p>
       <h1 className="mt-2 text-4xl font-bold">Übersicht</h1>
+      {error && (
+        <p role="alert" className="mt-5 rounded-xl bg-red-50 p-4 text-sm font-medium text-red-700">
+          {error}
+        </p>
+      )}
       <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         {cards.map(([label, value]) => (
           <article key={label} className="rounded-2xl border border-[var(--line)] bg-white p-5">
