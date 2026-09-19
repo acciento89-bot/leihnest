@@ -18,7 +18,7 @@ export async function uploadProfileImage(userId:string,input:Buffer){
   let previous:string|undefined;
   try{
     const created=await db.$transaction(async tx=>{
-      await tx.$queryRawUnsafe('SELECT id FROM "User" WHERE id = $1 FOR UPDATE',userId);
+      await tx.$queryRawUnsafe("SELECT pg_advisory_xact_lock(hashtext($1))",`leihnest:user:${userId}`);
       const user=await tx.user.findUnique({where:{id:userId},select:{id:true}});
       if(!user)throw new Error("FORBIDDEN");
       const existing=await tx.mediaAsset.findFirst({where:{userId,kind:"PROFILE"},orderBy:{createdAt:"desc"}});
@@ -43,7 +43,7 @@ export async function uploadGroupImage(groupId:string,userId:string,input:Buffer
   let previous:string|undefined;
   try{
     const created=await db.$transaction(async tx=>{
-      await tx.$queryRawUnsafe('SELECT id FROM "Group" WHERE id = $1 FOR UPDATE',groupId);
+      await tx.$queryRawUnsafe("SELECT pg_advisory_xact_lock(hashtext($1))",`leihnest:group:${groupId}`);
       const membership=await tx.membership.findUnique({where:{groupId_userId:{groupId,userId}}});
       if(!membership || !canManageGroupImage(membership.role as GroupRole))throw new Error("FORBIDDEN");
       const existing=await tx.mediaAsset.findFirst({where:{groupId,kind:"GROUP"},orderBy:{createdAt:"desc"}});
@@ -67,8 +67,9 @@ export async function uploadItemImage(groupId:string,itemId:string,userId:string
   const storageKey=await writeImageVariants(processed.variants);
   try{
     return await db.$transaction(async tx=>{
-      const locked=await tx.$queryRawUnsafe<Array<{id:string}>>('SELECT id FROM "Item" WHERE id = $1 AND "groupId" = $2 FOR UPDATE',itemId,groupId);
-      if(!locked.length)throw new Error("NOT_FOUND");
+      await tx.$queryRawUnsafe("SELECT pg_advisory_xact_lock(hashtext($1))",`leihnest:item:${itemId}`);
+      const locked=await tx.item.findFirst({where:{id:itemId,groupId},select:{id:true}});
+      if(!locked)throw new Error("NOT_FOUND");
       const membership=await tx.membership.findUnique({where:{groupId_userId:{groupId,userId}}});
       if(!membership || !canManageInventory(membership.role as GroupRole))throw new Error("FORBIDDEN");
       const subscription=await tx.groupSubscription.findUnique({where:{groupId}});
@@ -110,8 +111,9 @@ export async function deleteMedia(assetId:string,userId:string){
 export async function reorderItemMedia(groupId:string,itemId:string,userId:string,assetIds:string[]){
   if(new Set(assetIds).size!==assetIds.length)throw new Error("INVALID_ORDER");
   await db.$transaction(async tx=>{
-    const locked=await tx.$queryRawUnsafe<Array<{id:string}>>('SELECT id FROM "Item" WHERE id = $1 AND "groupId" = $2 FOR UPDATE',itemId,groupId);
-    if(!locked.length)throw new Error("NOT_FOUND");
+    await tx.$queryRawUnsafe("SELECT pg_advisory_xact_lock(hashtext($1))",`leihnest:item:${itemId}`);
+    const locked=await tx.item.findFirst({where:{id:itemId,groupId},select:{id:true}});
+    if(!locked)throw new Error("NOT_FOUND");
     const membership=await tx.membership.findUnique({where:{groupId_userId:{groupId,userId}}});
     if(!membership || !canManageInventory(membership.role as GroupRole))throw new Error("FORBIDDEN");
     const current=await tx.mediaAsset.findMany({where:{itemId,kind:"ITEM"},select:{id:true}});
