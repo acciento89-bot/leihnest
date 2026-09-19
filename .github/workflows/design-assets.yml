@@ -8,22 +8,19 @@ permissions:
 jobs:
   photos:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 3
     steps:
       - name: Download public reference photographs
         run: |
           mkdir -p photos
-          curl --fail --location --retry 1 --max-time 30 --user-agent 'LeihNest design review' 'https://upload.wikimedia.org/wikipedia/commons/6/67/JBL_Flip_3_bluetooth_speaker_%28DSCF2653%29.jpg' -o photos/speaker.jpg
-          for pair in 'pavilion|Partyzelt_1.jpg' 'projector|Benq_Projector_01.jpg' 'chair|Folding_Chair_Lifetime.jpg' 'toolbox|Toolbox_(226362564).jpg' 'benches|Biergarnitur.jpg'; do
+          for pair in 'projector-front|EPSON_CH-TW5400_LCD_PROJECTOR.jpg' 'projector-studio|Epson_H428B-7405.jpg' 'toolbox-alternative|Toolbox_(6788494881).jpg'; do
             name=${pair%%|*}
             file=${pair#*|}
             curl --fail --location --retry 1 --max-time 30 --user-agent 'LeihNest design review' "https://commons.wikimedia.org/wiki/Special:Redirect/file/$file" -o "photos/$name.jpg" || true
           done
-          curl --fail --location --retry 1 --max-time 30 'https://images.pexels.com/photos/4263121/pexels-photo-4263121.jpeg?w=2000' -o photos/garden.jpg || true
-          curl --fail --location --retry 1 --max-time 30 'https://images.pexels.com/photos/11114385/pexels-photo-11114385.jpeg?w=1600' -o photos/garden-alternative.jpg || true
           file photos/*
       - uses: actions/upload-artifact@v4
         with:
-          name: leihnest-licensed-photos
+          name: leihnest-licensed-photos-front
           path: photos/
           retention-days: 2
