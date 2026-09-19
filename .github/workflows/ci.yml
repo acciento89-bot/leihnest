@@ -25,6 +25,11 @@ jobs:
       BETTER_AUTH_URL: http://localhost:3000
       SECRET_KEY: legacy-portainer-build-secret-1234567890
       PUBLIC_URL: https://leihnest.de
+      UPLOADS_DIR: /tmp/leihnest-uploads
+      STRIPE_SECRET_KEY: sk_test_ci_only
+      STRIPE_WEBHOOK_SECRET: whsec_ci_only
+      STRIPE_PLUS_MONTHLY_PRICE_ID: price_ci_month
+      STRIPE_PLUS_YEARLY_PRICE_ID: price_ci_year
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
