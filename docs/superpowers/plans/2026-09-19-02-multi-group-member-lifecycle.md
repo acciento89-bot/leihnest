@@ -243,6 +243,7 @@ git commit -m "feat: manage group member roles"
 **Files:**
 - Modify: `src/features/groups/member-service.ts`
 - Modify: `src/features/groups/member-service.test.ts`
+- Create: `prisma/migrations/<timestamp>_single_group_owner/migration.sql`
 - Create: `src/components/app/group-membership-controls.tsx`
 - Modify: `src/app/(app)/app/settings/page.tsx`
 
@@ -265,9 +266,17 @@ it("transfers ownership in one transaction and leaves one owner", async () => {
 Run: `npm test -- src/features/groups/member-service.test.ts`  
 Expected: FAIL.
 
-- [ ] **Step 3: Implement transaction**
+- [ ] **Step 3: Enforce the ownership invariant in PostgreSQL and the service**
 
-Demote old OWNER to ADMIN and promote new member to OWNER inside one Prisma transaction. Validate new owner is existing group member.
+The migration first fails if any existing group has zero or multiple OWNER memberships, then creates a partial unique index:
+
+```sql
+CREATE UNIQUE INDEX "Membership_single_owner_per_group"
+ON "Membership" ("groupId")
+WHERE "role" = 'OWNER';
+```
+
+`transferOwnership` demotes old OWNER to ADMIN and promotes the new existing group member to OWNER inside one Prisma transaction so the final committed state satisfies the index.
 
 - [ ] **Step 4: Implement leave rules**
 
@@ -281,7 +290,7 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```sh
-git add src/features/groups/member-service* src/components/app/group-membership-controls.tsx src/app/\(app\)/app/settings/page.tsx
+git add prisma/migrations src/features/groups/member-service* src/components/app/group-membership-controls.tsx src/app/\(app\)/app/settings/page.tsx
 git commit -m "feat: add ownership transfer and leave group"
 ```
 
