@@ -42,6 +42,7 @@ export function AuthForm({
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (busy) return;
     setBusy(true);
     setError("");
 
@@ -49,24 +50,19 @@ export function AuthForm({
     const email = String(formData.get("email"));
     const password = String(formData.get("password"));
 
-    const result =
-      mode === "login"
+    try {
+      const result = mode === "login"
         ? await authClient.signIn.email({ email, password })
-        : await authClient.signUp.email({
-            name: String(formData.get("name")),
-            email,
-            password,
-          });
-
-    setBusy(false);
-
-    if (result.error) {
-      setError(result.error.message ?? labels.error);
-      return;
+        : await authClient.signUp.email({ name: String(formData.get("name")), email, password });
+      if (result.error) { setError(labels.error); return; }
+      document.cookie = `leihnest-language=${locale}; Path=/; Max-Age=31536000; SameSite=Lax${location.protocol === "https:" ? "; Secure" : ""}`;
+      router.push(safeNextPath(redirectTo));
+      router.refresh();
+    } catch {
+      setError(labels.error);
+    } finally {
+      setBusy(false);
     }
-
-    router.push(safeNextPath(redirectTo));
-    router.refresh();
   }
 
   return (

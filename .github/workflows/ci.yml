@@ -6,7 +6,20 @@ on:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: leihnest_test
+          POSTGRES_HOST_AUTH_METHOD: trust
+          POSTGRES_DB: leihnest_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U leihnest_test -d leihnest_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
     env:
+      LEIHNEST_TEST_DATABASE_URL: postgresql://leihnest_test@localhost:5432/leihnest_test
       DATABASE_URL: postgresql://build:build@localhost:5432/build
       BETTER_AUTH_SECRET: build-only-secret-build-only-secret-1234
       BETTER_AUTH_URL: http://localhost:3000
@@ -19,6 +32,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - run: npm run db:generate
       - name: Report dependency audit
         run: npm audit --omit=dev || true
       - name: Block critical production dependency vulnerabilities
