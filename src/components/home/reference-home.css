@@ -224,3 +224,18 @@
  .lh-header-login { position: absolute; left: calc(1288 * var(--u)); top: calc(18 * var(--u)); width: calc(98 * var(--u)); padding: 0; }
 }
 @media (max-width: 999px) { .lh-copy h1 span { font-size: inherit; } }
+
+
+/* Let longer headlines grow the hero instead of covering the audience strip.
+   At the reference size the original positions and minimum height are kept. */
+@media (min-width: 1000px) {
+  .lh-hero {
+    height: auto;
+    min-height: calc(576 * var(--u));
+    padding-block: calc(101 * var(--u)) calc(35 * var(--u));
+  }
+  .lh-copy {
+    position: relative;
+    top: auto;
+  }
+}
