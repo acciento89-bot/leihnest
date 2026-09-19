@@ -108,14 +108,26 @@ LeihNest already has the core closed-group lending workflow, but the product is 
     - one-command release gate
     - external production smoke test
 
+11. **SEO & Google Search Console**
+    - central public index policy
+    - corrected sitemap/robots handling
+    - canonical + DE/EN hreflang metadata
+    - explicit noindex for auth/private/token pages
+    - Open Graph + Twitter previews
+    - factual Organization/WebSite/WebApplication structured data
+    - Lighthouse public-page gate
+    - Google Search Console Domain Property verification
+    - sitemap submission and representative URL inspection
+
 ### Canonical roadmap documents
 
 - Product completion design: `docs/superpowers/specs/2026-09-19-leihnest-product-completion-design.md`
 - Auth/account design: `docs/superpowers/specs/2026-09-19-auth-account-completion-design.md`
 - Master implementation plan: `docs/superpowers/plans/2026-09-19-leihnest-product-completion-master.md`
 - Progress ledger: `docs/superpowers/LEIHNEST-COMPLETION-LEDGER.md`
-- Detailed plans: `docs/superpowers/plans/2026-09-19-01-*.md` through `2026-09-19-10-*.md`
-- Total roadmap size: **75 reviewable implementation tasks**
+- SEO/Search Console design: `docs/superpowers/specs/2026-09-19-seo-search-console-design.md`
+- Detailed plans: `docs/superpowers/plans/2026-09-19-01-*.md` through `2026-09-19-11-*.md`
+- Total roadmap size: **81 reviewable implementation tasks**
 
 ### Required execution order
 
@@ -130,6 +142,7 @@ LeihNest already has the core closed-group lending workflow, but the product is 
 08 Privacy & Export & Deletion
 09 PWA & Calendar Integration
 10 Security & Operations & Release
+11 SEO & Google Search Console
 ```
 
 Each plan is written for TDD and small reviewable commits. For agentic execution, use `superpowers:subagent-driven-development` where the runtime supports real subagent dispatch; otherwise use `superpowers:executing-plans`.
