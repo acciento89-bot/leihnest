@@ -44,8 +44,15 @@ services:
       BETTER_AUTH_URL: ${BETTER_AUTH_URL:-}
       SECRET_KEY: ${SECRET_KEY:-}
       PUBLIC_URL: ${PUBLIC_URL:-https://leihnest.de}
+      UPLOADS_DIR: /data/uploads
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+      STRIPE_PLUS_MONTHLY_PRICE_ID: ${STRIPE_PLUS_MONTHLY_PRICE_ID:-}
+      STRIPE_PLUS_YEARLY_PRICE_ID: ${STRIPE_PLUS_YEARLY_PRICE_ID:-}
       PORT: "8000"
       HOSTNAME: "0.0.0.0"
+    volumes:
+      - leihnest-uploads:/data/uploads
     ports:
       - "127.0.0.1:8086:8000"
     expose:
@@ -62,6 +69,7 @@ services:
 
 volumes:
   leihnest-db:
+  leihnest-uploads:
 
 networks:
   frontend:
