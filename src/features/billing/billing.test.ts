@@ -27,3 +27,17 @@ describe("LeihNest Plus entitlements", () => {
     expect(itemImageLimit({ status: "active", currentPeriodEnd: future, cancelAtPeriodEnd: false }, now)).toBe(5);
   });
 });
+
+import { resolvePriceId } from "./stripe";
+
+describe("Stripe plan price allowlist",()=>{
+  it("maps only the configured monthly and yearly prices",()=>{
+    const env={STRIPE_PLUS_MONTHLY_PRICE_ID:"price_month",STRIPE_PLUS_YEARLY_PRICE_ID:"price_year"} as NodeJS.ProcessEnv;
+    expect(resolvePriceId("month",env)).toBe("price_month");
+    expect(resolvePriceId("year",env)).toBe("price_year");
+  });
+  it("rejects missing or unsupported price configuration",()=>{
+    expect(()=>resolvePriceId("month",{} as NodeJS.ProcessEnv)).toThrow("STRIPE_NOT_CONFIGURED");
+    expect(()=>resolvePriceId("week" as never,{STRIPE_PLUS_MONTHLY_PRICE_ID:"price_month"} as NodeJS.ProcessEnv)).toThrow("STRIPE_NOT_CONFIGURED");
+  });
+});
