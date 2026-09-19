@@ -13,7 +13,7 @@ import { SingleImageControl } from "@/components/app/media-controls";
 import { BillingControls } from "@/components/app/billing-controls";
 import { updateProfileAction, updateGroupAction, setLanguageAction } from "../actions";
 
-export default async function SettingsPage({searchParams}:{searchParams:Promise<{billing?:string}>}){
+export default async function SettingsPage({searchParams=Promise.resolve({})}:{searchParams?:Promise<{billing?:string}>}={}){
   const session=await auth.api.getSession({headers:await headers()});if(!session)return null;
   const [{locale,t},membership,profileMedia,params]=await Promise.all([
     getWorkspaceText(),
