@@ -21,7 +21,7 @@ export async function createCheckout(groupId:string,userId:string,interval:PlanI
   let customerId:string;
   try{
     customerId=await db.$transaction(async tx=>{
-      await tx.$queryRawUnsafe('SELECT id FROM "Group" WHERE id = $1 FOR UPDATE',groupId);
+      await tx.$queryRawUnsafe("SELECT pg_advisory_xact_lock(hashtext($1))",`leihnest:billing:${groupId}`);
       const current=await tx.groupSubscription.findUnique({where:{groupId}});
       if(current && ACTIVE_LOCAL.has(current.status))throw new Error("SUBSCRIPTION_EXISTS");
       if(current?.status==="checkout_pending")throw new Error("CHECKOUT_PENDING");
