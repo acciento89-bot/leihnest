@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
