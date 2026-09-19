@@ -46,6 +46,7 @@
 8. `2026-09-19-08-privacy-export-deletion.md`
 9. `2026-09-19-09-pwa-calendar-integration.md`
 10. `2026-09-19-10-security-operations-release.md`
+11. `2026-09-19-11-seo-search-console.md`
 
 ## Execution Order and Dependencies
 
@@ -79,6 +80,9 @@ Adds installability/offline shell and safe ICS flows on top of stable routing.
 ### 10 — Security, Operations & Release
 Cross-system hardening, backup/restore, browser E2E, production release gate.
 
+### 11 — SEO & Google Search Console
+Runs after public routes and release plumbing are stable. Completes index policy, metadata, structured data, Lighthouse checks, Search Console Domain Property onboarding, sitemap submission and production SEO smoke verification.
+
 ## Shared Interfaces
 
 - Existing `src/lib/auth.ts` remains the Better Auth server entry.
@@ -109,4 +113,5 @@ The master roadmap is complete only when:
 - PWA installs;
 - database + uploads restore has been proven;
 - Portainer production deployment passes live smoke tests;
-- no marketplace/payment-between-members behavior has been introduced.
+- no marketplace/payment-between-members behavior has been introduced;
+- Search Console is verified for `leihnest.de`, the sitemap is submitted, and representative DE/EN public URLs pass SEO production verification.
