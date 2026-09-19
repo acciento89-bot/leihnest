@@ -266,7 +266,7 @@ https://leihnest.de/api/auth/callback/google
 
 Die Login- und Registrierungsoberflaeche erhaelt einen klaren Button fuer Google.
 
-Account-Verknuepfung darf nur auf einer vom Provider bestaetigten Identitaet basieren. Eine unbestaetigte Provider-E-Mail darf keinen bestehenden LeihNest-Account uebernehmen.
+LeihNest deaktiviert implizites Account-Linking. Existiert fuer dieselbe E-Mail bereits ein LeihNest-Konto, wird der Social-Login nicht stillschweigend damit verschmolzen. Der Nutzer meldet sich zuerst mit einer bereits verbundenen Methode an und verbindet Google anschliessend explizit in den Sicherheitseinstellungen.
 
 Ein bereits angemeldeter Nutzer kann Google in den Sicherheitseinstellungen explizit verbinden.
 
@@ -359,9 +359,9 @@ User
 
 Grundsaetze:
 
-- keine Verknuepfung ueber unbestaetigte Provider-E-Mails;
+- implizites Account-Linking wird mit Better Auth `account.accountLinking.disableImplicitLinking: true` deaktiviert;
+- keine automatische Zusammenfuehrung nur wegen einer identischen E-Mail-Adresse;
 - explizites Linking aus einer bestehenden, authentifizierten Sitzung ist erlaubt;
-- OAuth-Provider mit bestaetigter E-Mail duerfen nach den Better-Auth-Sicherheitsregeln mit demselben Benutzerkonto verknuepft werden;
 - unterschiedliche E-Mail-Adressen werden nicht automatisch als dieselbe Person behandelt;
 - Verknuepfungen koennen in den Sicherheitseinstellungen angezeigt werden;
 - Entfernen eines Providers darf den Nutzer nicht ohne nutzbaren Login-/Recovery-Weg zuruecklassen.
