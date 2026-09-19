@@ -203,6 +203,8 @@ model GroupSubscription {
   stripeCustomerId     String           @unique
   stripeSubscriptionId String?          @unique
   stripePriceId        String?
+  stripeCheckoutSessionId String?       @unique
+  stripeCheckoutExpiresAt DateTime?
   interval             BillingInterval?
   status               String
   currentPeriodEnd     DateTime?
