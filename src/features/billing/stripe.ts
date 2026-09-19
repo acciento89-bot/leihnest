@@ -9,7 +9,7 @@ export function getStripe(){
   return stripeClient ??= new Stripe(key,{appInfo:{name:"LeihNest",version:"1.0.0"}});
 }
 
-export function resolvePriceId(interval:PlanInterval,env:NodeJS.ProcessEnv=process.env){
+type PriceEnvironment={STRIPE_PLUS_MONTHLY_PRICE_ID?:string;STRIPE_PLUS_YEARLY_PRICE_ID?:string};\n\nexport function resolvePriceId(interval:PlanInterval,env:PriceEnvironment=process.env){
   const id=interval==="month"?env.STRIPE_PLUS_MONTHLY_PRICE_ID:interval==="year"?env.STRIPE_PLUS_YEARLY_PRICE_ID:undefined;
   if(!id)throw new Error("STRIPE_NOT_CONFIGURED");
   return id;
