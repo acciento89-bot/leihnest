@@ -109,9 +109,9 @@ Expected: FAIL.
 
 Server action validates requested group against current user's memberships, then writes `leihnest-active-group=<groupId>` as HttpOnly false, SameSite Lax, Secure in production.
 
-- [ ] **Step 4: Update workspace pages**
+- [ ] **Step 4: Update workspace pages and allow additional group creation**
 
-Dashboard/items/reservations/members/settings resolve active group from validated context.
+Dashboard/items/reservations/members/settings resolve active group from validated context. The group switcher/settings exposes a `Neue Gruppe` / `Create group` action even when the user already has memberships; it reuses `createGroupAction`, selects the newly created group, and does not replace existing memberships.
 
 - [ ] **Step 5: Run GREEN**
 
