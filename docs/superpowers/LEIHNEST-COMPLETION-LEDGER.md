@@ -17,8 +17,9 @@ This ledger is the handoff/status file for long-running implementation. Update i
 | 08 | Privacy, Export & Deletion | 7 | not started | Task 1 |
 | 09 | PWA & Calendar Integration | 7 | not started | Task 1 |
 | 10 | Security, Operations & Release | 9 | not started | Task 1 |
+| 11 | SEO & Google Search Console | 6 | not started | Task 1 |
 
-**Total:** 75 implementation tasks.
+**Total:** 81 implementation tasks.
 
 ## Update rule
 
