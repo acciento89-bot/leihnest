@@ -1,42 +1,29 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import type { Metadata } from "next";
 import { auth } from "@/lib/auth";
+import { getPrimaryMembership } from "@/features/groups/group-service";
+import { getWorkspaceText } from "@/features/workspace/locale";
+import { initials } from "@/features/workspace/workspace";
+import { AppNavigation } from "@/components/app/workspace-controls";
 import { AccountControls } from "@/components/app/account-controls";
+import { Icon } from "@/components/app/workspace-ui";
+import "./workspace.css";
 
-const navigation = [
-  ["/app", "Übersicht"],
-  ["/app/items", "Gegenstände"],
-  ["/app/reservations", "Reservierungen"],
-  ["/app/members", "Mitglieder"],
-  ["/app/settings", "Einstellungen"],
-] as const;
-
+export const metadata: Metadata = { title:"Dein LeihNest", robots:{ index:false, follow:false } };
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const session = await auth.api.getSession({ headers: await headers() });
+  const session=await auth.api.getSession({ headers:await headers() });
   if (!session) redirect("/login");
-
-  return (
-    <div className="min-h-screen md:grid md:grid-cols-[240px_1fr]">
-      <aside className="border-b border-[var(--line)] bg-white p-5 md:flex md:min-h-screen md:flex-col md:border-b-0 md:border-r">
-        <Link href="/app" className="text-xl font-bold text-[var(--brand)]">
-          LeihNest
-        </Link>
-
-        <nav className="mt-8 grid grid-cols-2 gap-2 text-sm md:grid-cols-1">
-          {navigation.map(([href, label]) => (
-            <Link key={href} href={href} className="rounded-xl px-3 py-2 hover:bg-[var(--surface-soft)]">
-              {label}
-            </Link>
-          ))}
-        </nav>
-
-        <div className="md:mt-auto">
-          <AccountControls email={session.user.email} />
-        </div>
-      </aside>
-
-      <main className="min-w-0 p-5 sm:p-8">{children}</main>
-    </div>
-  );
+  const [{locale,t}, membership]=await Promise.all([getWorkspaceText(),getPrimaryMembership(session.user.id)]);
+  return <div className="workspace" lang={locale}>
+    <a href="#workspace-content" className="ws-skip">{t.skip}</a>
+    <aside className="ws-sidebar"><Link href="/app" className="ws-brand"><span className="ws-brand-mark"><Icon name="home"/></span><span>LeihNest<small>{t.home}</small></span></Link>
+      <AppNavigation locale={locale}/>
+      <div className="ws-sidebar-bottom"><a href="/kontakt" className="ws-support"><Icon name="people"/>{t.help}</a><AccountControls email={session.user.email} locale={locale}/></div>
+    </aside>
+    <div className="ws-main"><div className="ws-topbar"><div className="ws-person"><span className="ws-action-icon"><Icon name="people"/></span><div><strong>{membership?.group.name ?? t.welcome}</strong><small>{t.privateGroup}</small></div></div>
+      <Link href="/app/settings" className="ws-person" aria-label={t.settings}><span className="ws-user-name">{session.user.name}</span><span className="ws-avatar">{initials(session.user.name)}</span></Link>
+    </div><main id="workspace-content" className="ws-content">{children}</main></div>
+  </div>;
 }

@@ -1,86 +1,33 @@
+import Link from "next/link";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getPrimaryMembership } from "@/features/groups/group-service";
-import { canManageInventory, type GroupRole } from "@/features/groups/permissions";
+import { canManageInventory } from "@/features/groups/permissions";
+import { getWorkspaceText } from "@/features/workspace/locale";
+import { itemKind, type WorkspaceText } from "@/features/workspace/workspace";
 import { ItemIllustration } from "@/components/site/item-illustration";
+import { PageHeading, NoGroup, EmptyState, Flash, Field, Icon } from "@/components/app/workspace-ui";
+import { ActionForm, SubmitButton } from "@/components/app/workspace-controls";
 import { createItemAction, itemAction } from "../actions";
 
-type ItemsPageProps = {
-  searchParams: Promise<{ error?: string }>;
-};
-
+type ItemsPageProps={searchParams:Promise<{error?:string;q?:string;new?:string}>};
+type ItemFieldsValue={name:string;location:string|null;description:string|null;totalQuantity:number};
+function ItemFields({ t,item }: {t:WorkspaceText;item?:ItemFieldsValue}) {
+  return <div className="ws-form-grid"><Field label={t.name}><input name="name" required minLength={2} maxLength={120} defaultValue={item?.name} placeholder={t.itemNameExample}/></Field><Field label={t.quantity}><input name="totalQuantity" type="number" required min={1} max={9999} step={1} defaultValue={item?.totalQuantity ?? 1}/></Field><div className="ws-full"><Field label={t.location}><input name="location" maxLength={120} defaultValue={item?.location ?? ""} placeholder={t.locationExample}/></Field></div><div className="ws-full"><Field label={`${t.description} (${t.optional})`}><textarea name="description" maxLength={1000} defaultValue={item?.description ?? ""} placeholder={t.descriptionHint}/></Field></div></div>;
+}
 export default async function ItemsPage({ searchParams }: ItemsPageProps) {
-  const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) return null;
-
-  const { error } = await searchParams;
-  const membership = await getPrimaryMembership(session.user.id);
-  if (!membership) return <p>Bitte zuerst eine Gruppe erstellen.</p>;
-
-  const items = await db.item.findMany({
-    where: { groupId: membership.groupId, active: true },
-    orderBy: { name: "asc" },
-  });
-
-  const manage = canManageInventory(membership.role as GroupRole);
-
-  return (
-    <section>
-      <h1 className="text-4xl font-bold">Gegenstände</h1>
-
-      {error && (
-        <p role="alert" className="mt-5 rounded-xl bg-red-50 p-4 text-sm font-medium text-red-700">
-          {error}
-        </p>
-      )}
-
-      {manage && (
-        <form action={createItemAction} className="mt-8 grid gap-3 rounded-2xl border border-[var(--line)] bg-white p-5 sm:grid-cols-2">
-          <input name="name" required placeholder="Name" className="rounded-xl border p-3" />
-          <input name="location" placeholder="Lagerort" className="rounded-xl border p-3" />
-          <input name="totalQuantity" type="number" min="1" defaultValue="1" className="rounded-xl border p-3" />
-          <input name="description" placeholder="Beschreibung" className="rounded-xl border p-3" />
-          <button className="rounded-xl bg-[var(--brand)] p-3 font-semibold text-white sm:col-span-2">
-            Gegenstand hinzufügen
-          </button>
-        </form>
-      )}
-
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {items.map((item) => (
-          <article key={item.id} className="rounded-2xl border border-[var(--line)] bg-white p-5">
-            <div className="mb-4 grid aspect-[16/8] place-items-center rounded-xl bg-[var(--surface-soft)]">
-              <ItemIllustration kind="generic" />
-            </div>
-
-            {manage ? (
-              <form action={itemAction} className="grid gap-3">
-                <input type="hidden" name="itemId" value={item.id} />
-                <input name="name" required defaultValue={item.name} className="rounded-xl border p-3 font-bold" />
-                <input name="location" defaultValue={item.location ?? ""} placeholder="Lagerort" className="rounded-xl border p-3" />
-                <input name="totalQuantity" type="number" min="1" defaultValue={item.totalQuantity} className="rounded-xl border p-3" />
-                <input name="description" defaultValue={item.description ?? ""} placeholder="Beschreibung" className="rounded-xl border p-3" />
-                <div className="flex flex-wrap gap-2">
-                  <button name="action" value="update" className="rounded-lg bg-[var(--brand)] px-3 py-2 text-sm font-semibold text-white">
-                    Speichern
-                  </button>
-                  <button name="action" value="archive" className="rounded-lg border px-3 py-2 text-sm">
-                    Archivieren
-                  </button>
-                </div>
-              </form>
-            ) : (
-              <>
-                <h2 className="text-lg font-bold">{item.name}</h2>
-                <p className="mt-2 text-sm text-[var(--brand)]">{item.totalQuantity} Stück</p>
-                <p className="text-sm text-[var(--muted)]">{item.location || "Kein Lagerort"}</p>
-                {item.description && <p className="mt-3 text-sm leading-6 text-[var(--muted)]">{item.description}</p>}
-              </>
-            )}
-          </article>
-        ))}
-      </div>
-    </section>
-  );
+  const session=await auth.api.getSession({headers:await headers()}); if(!session) return null;
+  const [params,{locale,t},membership]=await Promise.all([searchParams,getWorkspaceText(),getPrimaryMembership(session.user.id)]);
+  if(!membership) return <NoGroup locale={locale}/>;
+  const q=typeof params.q === "string" ? params.q.trim().slice(0,120) : "";
+  const items=await db.item.findMany({where:{groupId:membership.groupId,active:true,...(q ? {OR:[{name:{contains:q,mode:"insensitive" as const}},{location:{contains:q,mode:"insensitive" as const}},{description:{contains:q,mode:"insensitive" as const}}]} : {})},orderBy:{name:"asc"}});
+  const manage=canManageInventory(membership.role);
+  return <section><PageHeading title={t.items} description={t.inventoryHint} action={manage && <Link className="ws-button" href="/app/items?new=1#new-item"><Icon name="plus"/>{t.addItem}</Link>}/><Flash error={params.error}/>
+    {manage && <details id="new-item" className="ws-card ws-disclosure" open={params.new==="1" || !!params.error}><summary>{t.addItem}</summary><ActionForm action={createItemAction} locale={locale} resetOnSuccess><ItemFields t={t}/><div><SubmitButton locale={locale}>{t.addItem}</SubmitButton></div></ActionForm></details>}
+    <form method="get" className="ws-search"><Field label={t.searchItems}><input type="search" name="q" defaultValue={q} placeholder={t.searchHint}/></Field><button type="submit" className="ws-button ws-secondary">{t.search}</button>{q && <Link className="ws-link" href="/app/items">{t.reset}</Link>}</form>
+    {items.length ? <div className="ws-item-grid">{items.map(item=><article className="ws-card ws-item" key={item.id}><div className="ws-item-visual"><ItemIllustration kind={itemKind(item.name)}/><span className="ws-badge">{item.totalQuantity} {t.total}</span></div><div className="ws-item-body"><h2>{item.name}</h2><p className="ws-location"><Icon name="pin"/>{item.location || t.noLocation}</p>{item.description && <p className="ws-item-description">{item.description}</p>}<div className="ws-item-footer"><Link className="ws-button ws-secondary" href={`/app/reservations?item=${encodeURIComponent(item.id)}&new=1#new-reservation`}><Icon name="calendar"/>{t.reserve}</Link></div>
+      {manage && <details><summary>{t.edit}</summary><ActionForm action={itemAction} locale={locale}><input type="hidden" name="itemId" value={item.id}/><ItemFields t={t} item={item}/><div className="ws-form-actions"><SubmitButton name="action" value="update" locale={locale}>{t.save}</SubmitButton><SubmitButton name="action" value="archive" locale={locale} secondary confirm={t.archiveConfirm}>{t.archive}</SubmitButton></div><p className="ws-muted">{t.archiveHint}</p></ActionForm></details>}
+    </div></article>)}</div> : <EmptyState title={q?t.noResults:t.emptyItems} description={q?t.noResultsHint:(manage?t.emptyItemsHint:t.memberEmptyItems)}>{q ? <Link className="ws-button ws-secondary" href="/app/items">{t.reset}</Link> : manage && <Link className="ws-button" href="/app/items?new=1#new-item">{t.addItem}</Link>}</EmptyState>}
+  </section>;
 }

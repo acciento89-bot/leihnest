@@ -6,6 +6,7 @@ const state = vi.hoisted(() => ({
   membership: { groupId: "group-1", role: "OWNER", group: { name: "Gartenfreunde", id: "group-1" } } as { groupId: string; role: string; group: { name: string; id: string } } | null,
   locale: "de",
 }));
+vi.mock("next/navigation", () => ({ useRouter: () => ({replace:vi.fn(),refresh:vi.fn()}),usePathname:()=>"/app" }));
 vi.mock("next/headers", () => ({
   headers: async () => new Headers({ "accept-language": state.locale }),
   cookies: async () => ({ get: () => ({ value: state.locale }) }),
@@ -22,12 +23,13 @@ vi.mock("@/lib/db", () => {
   const reservation = { id: "reservation-1", itemId: item.id, item, userId: "user-1", user: { id: "user-1", name: "Anna" }, quantity: 1, status: "PENDING", purpose: "Sommerfest", returnNote: null, startsAt: new Date("2026-10-01T08:00:00Z"), endsAt: new Date("2026-10-02T16:00:00Z") };
   return { db: {
     item: { findMany: async () => [item], count: async () => 1 },
-    reservation: { findMany: async () => [reservation], count: async () => 1 },
+    reservation: { findMany: vi.fn(async () => [reservation]), count: vi.fn(async () => 1) },
     membership: { findMany: async () => [{ id: "member-1", role: "OWNER", userId: "user-1", user: { name: "Anna", email: "anna@example.com" } }], count: async () => 1 },
     invitation: { findMany: async () => [] },
   } };
 });
 
+import { db } from "@/lib/db";
 import Dashboard from "@/app/(app)/app/page";
 import ItemsPage from "@/app/(app)/app/items/page";
 import ReservationsPage from "@/app/(app)/app/reservations/page";
@@ -76,5 +78,29 @@ describe("customer workspace", () => {
     const html = renderToStaticMarkup(await ItemsPage({ searchParams: Promise.resolve({}) }));
     expect(html).toContain('href="/app"');
     expect(html).toContain("Gruppe erstellen");
+  });
+});
+
+describe("workspace role, language and history boundaries",()=>{
+  it("renders the English workspace consistently",async()=>{
+    state.locale="en";
+    const pages=[await Dashboard({searchParams:Promise.resolve({})}),await ItemsPage({searchParams:Promise.resolve({})}),await ReservationsPage({searchParams:Promise.resolve({})}),await MembersPage({searchParams:Promise.resolve({})}),await SettingsPage()];
+    const html=pages.map(page=>renderToStaticMarkup(page)).join("");
+    for(const text of ["Next steps","Search items","Requested","Owner","Your profile"])expect(html).toContain(text);
+    expect(html).not.toContain(">PENDING<");expect(html).not.toContain(">OWNER<");
+  });
+  it("does not show inventory management controls to members",async()=>{
+    state.membership!.role="MEMBER";
+    const html=renderToStaticMarkup(await ItemsPage({searchParams:Promise.resolve({})}));
+    expect(html).not.toContain("Archivieren");expect(html).not.toContain("Bearbeiten");expect(html).toContain("Reservieren");
+  });
+  it("loads completed records instead of truncating history to the latest hundred",async()=>{
+    vi.mocked(db.reservation.count).mockResolvedValueOnce(45);
+    await ReservationsPage({searchParams:Promise.resolve({filter:"history",page:"2"})});
+    expect(db.reservation.findMany).toHaveBeenLastCalledWith(expect.objectContaining({where:{groupId:"group-1",status:{in:["RETURNED","REJECTED","CANCELLED"]}},skip:20,take:20}));
+  });
+  it("scopes personal loans to the signed-in member",async()=>{
+    await ReservationsPage({searchParams:Promise.resolve({filter:"mine"})});
+    expect(db.reservation.findMany).toHaveBeenLastCalledWith(expect.objectContaining({where:{groupId:"group-1",userId:"user-1"}}));
   });
 });
