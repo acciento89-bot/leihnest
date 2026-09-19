@@ -70,7 +70,7 @@ it("subtracts unavailable units before overlapping reservations", async () => {
 Run: `npm test -- src/features/reservations/availability*`  
 Expected: FAIL.
 
-- [ ] **Step 3: Implement service**
+- [ ] **Step 3: Implement service and use it for new requests**
 
 Load active group item. Reject cross-group item. Call `effectiveQuantity`. Aggregate only APPROVED/HANDED_OUT ranges matching:
 
@@ -79,7 +79,7 @@ startsAt: { lt: proposedEnd },
 endsAt: { gt: proposedStart },
 ```
 
-Optionally exclude the current reservation during edit.
+Optionally exclude the current reservation during edit. Update `createReservation` to call this service and reject a new PENDING request when the requested quantity exceeds the currently remaining quantity or the item is OUT_OF_SERVICE/RETIRED. PENDING requests still do not reserve stock; approval re-checks under lock.
 
 - [ ] **Step 4: Keep boundary semantics pinned**
 
