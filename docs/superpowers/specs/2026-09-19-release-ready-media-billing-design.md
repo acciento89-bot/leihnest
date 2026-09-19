@@ -383,14 +383,15 @@ CSV output must escape spreadsheet formula prefixes to prevent CSV injection.
 
 ### Enhanced analytics
 
-Plus dashboard adds useful group-level figures derived from existing data, for example:
+Plus dashboard adds only metrics that can be derived from existing reservation data:
 
-- most borrowed items;
-- reservation counts over a recent period;
-- completed/active request split;
-- utilization trends where enough data exists.
+- reservation count for the last 30 days;
+- monthly reservation counts for the last six calendar months;
+- top five most borrowed items over the last 90 days, excluding REJECTED and CANCELLED reservations;
+- current split of PENDING, APPROVED, HANDED_OUT, RETURNED, REJECTED, and CANCELLED reservations;
+- average completed-loan duration based only on RETURNED reservations with valid timestamps.
 
-No fabricated metrics or claims are displayed.
+Groups without enough data receive a clear empty/insufficient-data state. No fabricated metrics or claims are displayed.
 
 ## 9. Security and Abuse Controls
 
@@ -408,7 +409,7 @@ Additional requirements:
 - Stripe price selection is an allowlist of the configured two Price IDs, not an arbitrary client-provided Price ID;
 - webhook signature verification occurs before database writes;
 - Stripe event IDs are unique in the processed-event table;
-- rate-limit upload and billing-session creation at an application level sufficient to prevent obvious accidental/abusive bursts;
+- rate-limit authenticated upload mutations to 10 requests per user per minute and Stripe Checkout/Portal session creation to 5 requests per OWNER per minute; the current single web-container deployment may use an in-process fixed-window limiter, and the limiter must be isolated behind a small service so it can be replaced with a shared store before horizontal scaling;
 - customer-facing errors remain generic; detailed errors stay server-side without secrets.
 
 ## 10. Data Lifecycle
@@ -475,8 +476,8 @@ Required automated coverage:
 - metadata stripped/re-encoded;
 - correct variants generated;
 - profile/group/item authorization;
-- Free one-image limit;
-- Plus five-image limit;
+- Free one-image limit, including concurrent upload attempts;
+- Plus five-image limit, including concurrent upload attempts;
 - replacement/removal cleanup;
 - inaccessible media returns 404.
 
@@ -485,7 +486,7 @@ Required automated coverage:
 - only OWNER can start Checkout or Portal;
 - only monthly/yearly configured prices can be selected;
 - group metadata included in Checkout;
-- duplicate active subscription prevented;
+- duplicate active subscription prevented, including repeated Checkout clicks;
 - webhook invalid signature rejected;
 - webhook events idempotent;
 - subscription state maps correctly to entitlements;
