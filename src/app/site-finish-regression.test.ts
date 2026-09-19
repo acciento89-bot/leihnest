@@ -10,13 +10,15 @@ import Register, {metadata as registerMetadata} from "./register/page";
 vi.mock("next/navigation",()=>({useRouter:()=>({push:vi.fn(),refresh:vi.fn()})}));
 
 describe("finished LeihNest public website", () => {
-  it("preserves trust, FAQ and English navigation in the rendered German landing page", () => {
+  it("preserves the approved sections, truthful benefits and English navigation", () => {
     const page=renderToStaticMarkup(React.createElement(Home));
-    for(const text of ['id="vorteile"','id="faq"',"Keine Werbung","H\u00e4ufige Fragen",'href="/en"'])expect(page).toContain(text);
+    for(const text of ['id="funktionen"','id="ablauf"',"Keine Werbung",'href="/en"'])expect(page).toContain(text);
+    expect(page).not.toContain('class="nest-trust"');
+    expect(page).not.toContain('class="nest-faq"');
   });
   it("gives the English page the same complete product and legal navigation", () => {
     const page=renderToStaticMarkup(React.createElement(EnglishHome));
-    for(const text of ["How it works","Who LeihNest is for","Privacy by design","Frequently asked questions","house communities",'href="/kontakt"','href="/impressum"','href="/datenschutz"'])expect(page).toContain(text);
+    for(const text of ["How it works","Who LeihNest is for","Organise your collection","Keep track of returns",'href="/kontakt"','href="/impressum"','href="/datenschutz"'])expect(page).toContain(text);
   });
   it("keeps the canonical and alternate-language metadata",()=>{
     expect(englishMetadata.alternates).toEqual({canonical:"/en",languages:{"de-DE":"/",en:"/en"}});

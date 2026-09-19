@@ -1,2 +1,2 @@
-import { LandingPage } from "@/components/design/landing-page";
-export default function Home(){ return <LandingPage locale="de"/>; }
+import { ReferenceHome } from "@/components/home/reference-home";
+export default function Home(){ return <ReferenceHome locale="de"/>; }

@@ -6,13 +6,13 @@ import EnglishHome from "@/app/en/page";
 import Login from "@/app/login/page";
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }) }));
 
-describe("approved photographic concept", () => {
-  it("renders the exact headline and photo-led hero as real components", () => {
+describe("approved reference presentation", () => {
+  it("renders the approved headline and reference hero as real components", () => {
     const html=renderToStaticMarkup(<Home/>);
     expect(html).toContain("Gute Dinge.");
     expect(html).toContain("Teilt man.");
-    expect(html).toContain('data-concept="landing"');
-    expect(html).toContain("/images/leihnest/");
+    expect(html).toContain('class="lh-home"');
+    expect(html).toContain("/images/leihnest-home/");
     expect(html).not.toContain('data-visual-style="duotone-real-object"');
   });
   it("marks sample inventory as a demonstration, not customer proof", () => {
@@ -22,9 +22,9 @@ describe("approved photographic concept", () => {
   });
   it("provides a corresponding fully English design", () => {
     const html=renderToStaticMarkup(<EnglishHome/>);
-    expect(html).toContain('data-concept="landing"');
+    expect(html).toContain('class="lh-home"');
     expect(html).toContain("Good things.");
-    expect(html).toContain("Are better shared.");
+    expect(html).toContain("Better shared.");
     expect(html).toContain("Example preview");
     expect(html).not.toContain("Gute Dinge");
   });
