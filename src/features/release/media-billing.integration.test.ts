@@ -1,17 +1,22 @@
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { readFile } from "node:fs/promises";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
+import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { Pool } from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@/generated/prisma/client";
 
 const testURL = process.env.LEIHNEST_TEST_DATABASE_URL;
 const schema = `media_billing_${crypto.randomUUID().replaceAll("-", "")}`;
+const PNG=Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAFElEQVR42mNk+M/AwMDAxMDAwMDAAAANHQEDasKb6QAAAABJRU5ErkJggg==","base64");
 let admin: Pool;
 let client: PrismaClient;
+let uploads:string;
+let media:typeof import("@/features/media/media-service");
 
 beforeAll(async () => {
   if (!testURL) return;
-  admin = new Pool({ connectionString: testURL, max: 1 });
+  admin = new Pool({ connectionString: testURL, max: 4 });
   await admin.query(`CREATE SCHEMA "${schema}"`);
   await admin.query(`SET search_path TO "${schema}"`);
   for (const migration of [
@@ -21,14 +26,21 @@ beforeAll(async () => {
     await admin.query(await readFile(migration, "utf8"));
   }
   client = new PrismaClient({ adapter: new PrismaPg(admin, { schema, disposeExternalPool: false }) });
+  uploads=await mkdtemp(join(tmpdir(),"leihnest-release-media-"));
+  process.env.UPLOADS_DIR=uploads;
+  vi.doMock("@/lib/db",()=>({db:client}));
+  media=await import("@/features/media/media-service");
 }, 20000);
 
 afterAll(async () => {
+  vi.doUnmock("@/lib/db");
+  delete process.env.UPLOADS_DIR;
   if (client) await client.$disconnect();
   if (admin) {
     await admin.query(`DROP SCHEMA IF EXISTS "${schema}" CASCADE`);
     await admin.end();
   }
+  if(uploads)await rm(uploads,{recursive:true,force:true});
 });
 
 describe.skipIf(!testURL)("media and billing persistence", () => {
@@ -78,5 +90,37 @@ describe.skipIf(!testURL)("media and billing persistence", () => {
 
     expect(persisted.subscription?.stripeSubscriptionId).toBe("sub_release");
     expect(persisted.items[0].media[0].storageKey).toBe("11111111-1111-4111-8111-111111111111");
+  });
+
+  it("serializes concurrent Free uploads so only one item image can be created",async()=>{
+    await client.user.createMany({data:[
+      {id:"free-owner",name:"Free Owner",email:"free-owner@leihnest.test"},
+      {id:"free-member",name:"Free Member",email:"free-member@leihnest.test"},
+    ]});
+    const group=await client.group.create({data:{name:"Free group",slug:"free-group",memberships:{create:[
+      {userId:"free-owner",role:"OWNER"},{userId:"free-member",role:"MEMBER"},
+    ]}}});
+    const item=await client.item.create({data:{groupId:group.id,createdByUserId:"free-owner",name:"Gazebo",totalQuantity:1}});
+
+    const results=await Promise.allSettled([
+      media.uploadItemImage(group.id,item.id,"free-owner",PNG),
+      media.uploadItemImage(group.id,item.id,"free-owner",PNG),
+    ]);
+    expect(results.filter(result=>result.status==="fulfilled")).toHaveLength(1);
+    expect(results.filter(result=>result.status==="rejected")).toHaveLength(1);
+    expect(await client.mediaAsset.count({where:{itemId:item.id,kind:"ITEM"}})).toBe(1);
+
+    const asset=await client.mediaAsset.findFirstOrThrow({where:{itemId:item.id}});
+    await expect(media.getAuthorizedMedia(asset.id,"free-member")).resolves.toMatchObject({id:asset.id});
+    await client.membership.delete({where:{groupId_userId:{groupId:group.id,userId:"free-member"}}});
+    await expect(media.getAuthorizedMedia(asset.id,"free-member")).rejects.toThrow("NOT_FOUND");
+  });
+
+  it("enforces five item images for a paid group",async()=>{
+    const group=await client.group.findUniqueOrThrow({where:{slug:"release-group"}});
+    const item=await client.item.findFirstOrThrow({where:{groupId:group.id}});
+    for(let index=0;index<4;index++)await media.uploadItemImage(group.id,item.id,"release-owner",PNG);
+    expect(await client.mediaAsset.count({where:{itemId:item.id,kind:"ITEM"}})).toBe(5);
+    await expect(media.uploadItemImage(group.id,item.id,"release-owner",PNG)).rejects.toThrow("IMAGE_LIMIT");
   });
 });
