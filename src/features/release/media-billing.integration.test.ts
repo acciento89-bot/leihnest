@@ -5,10 +5,11 @@ import { join } from "node:path";
 import { Pool } from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@/generated/prisma/client";
+import sharp from "sharp";
 
 const testURL = process.env.LEIHNEST_TEST_DATABASE_URL;
 const schema = `media_billing_${crypto.randomUUID().replaceAll("-", "")}`;
-const PNG=Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAFElEQVR42mNk+M/AwMDAxMDAwMDAAAANHQEDasKb6QAAAABJRU5ErkJggg==","base64");
+let PNG:Buffer;
 let admin: Pool;
 let client: PrismaClient;
 let uploads:string;
@@ -27,6 +28,7 @@ beforeAll(async () => {
   }
   client = new PrismaClient({ adapter: new PrismaPg(admin, { schema, disposeExternalPool: false }) });
   uploads=await mkdtemp(join(tmpdir(),"leihnest-release-media-"));
+  PNG=await sharp({create:{width:2,height:2,channels:3,background:{r:32,g:96,b:64}}}).png().toBuffer();
   process.env.UPLOADS_DIR=uploads;
   vi.doMock("@/lib/db",()=>({db:client}));
   media=await import("@/features/media/media-service");
