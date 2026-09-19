@@ -30,14 +30,54 @@ jobs:
             sleep 10
           done
 
-      - name: Verify deployed release markers
+      - name: Verify homepage pricing and feature links
         shell: bash
         run: |
           set -euo pipefail
-          body="$(curl -fsSL --connect-timeout 10 --max-time 20 https://leihnest.de/datenschutz)"
-          grep -q 'Gegenstandsbilder' <<<"$body"
-          grep -q 'Stripe' <<<"$body"
-          grep -q '19. September 2026' <<<"$body"
+          body="$(curl -fsSL --connect-timeout 10 --max-time 20 https://leihnest.de/)"
+          grep -q 'href="/preise"' <<<"$body"
+          grep -q 'LeihNest Plus' <<<"$body"
+          grep -q '4,99' <<<"$body"
+          grep -q '39,99' <<<"$body"
+          grep -q 'href="/funktionen#inventar"' <<<"$body"
+          grep -q 'href="/funktionen#reservierungen"' <<<"$body"
+          grep -q 'href="/funktionen#rueckgaben"' <<<"$body"
+
+      - name: Verify German pricing page
+        shell: bash
+        run: |
+          set -euo pipefail
+          body="$(curl -fsSL --connect-timeout 10 --max-time 20 https://leihnest.de/preise)"
+          grep -q 'Plus ist optional' <<<"$body"
+          grep -q 'Dauerhaft kostenlos' <<<"$body"
+          grep -q '4,99' <<<"$body"
+          grep -q '39,99' <<<"$body"
+          grep -q 'Ein Abo gilt für die ganze Gruppe' <<<"$body"
+
+      - name: Verify German feature details
+        shell: bash
+        run: |
+          set -euo pipefail
+          body="$(curl -fsSL --connect-timeout 10 --max-time 20 https://leihnest.de/funktionen)"
+          grep -q 'id="inventar"' <<<"$body"
+          grep -q 'id="reservierungen"' <<<"$body"
+          grep -q 'id="rueckgaben"' <<<"$body"
+          grep -q 'Inventar organisieren' <<<"$body"
+          grep -q 'Smarte Reservierungen' <<<"$body"
+          grep -q 'Rückgaben im Blick' <<<"$body"
+
+      - name: Verify English public pages
+        shell: bash
+        run: |
+          set -euo pipefail
+          pricing="$(curl -fsSL --connect-timeout 10 --max-time 20 https://leihnest.de/en/pricing)"
+          features="$(curl -fsSL --connect-timeout 10 --max-time 20 https://leihnest.de/en/features)"
+          grep -q 'Plus is optional' <<<"$pricing"
+          grep -q '€4.99' <<<"$pricing"
+          grep -q '€39.99' <<<"$pricing"
+          grep -q 'id="inventory"' <<<"$features"
+          grep -q 'id="reservations"' <<<"$features"
+          grep -q 'id="returns"' <<<"$features"
 
       - name: Verify Stripe webhook route exists
         shell: bash
