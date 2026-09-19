@@ -35,6 +35,8 @@ CREATE TABLE "GroupSubscription" (
     "stripeCustomerId" TEXT NOT NULL,
     "stripeSubscriptionId" TEXT,
     "stripePriceId" TEXT,
+    "stripeCheckoutSessionId" TEXT,
+    "stripeCheckoutExpiresAt" TIMESTAMP(3),
     "interval" "BillingInterval",
     "status" TEXT NOT NULL,
     "currentPeriodEnd" TIMESTAMP(3),
@@ -64,6 +66,7 @@ CREATE INDEX "MediaAsset_itemId_position_idx" ON "MediaAsset"("itemId", "positio
 CREATE UNIQUE INDEX "GroupSubscription_groupId_key" ON "GroupSubscription"("groupId");
 CREATE UNIQUE INDEX "GroupSubscription_stripeCustomerId_key" ON "GroupSubscription"("stripeCustomerId");
 CREATE UNIQUE INDEX "GroupSubscription_stripeSubscriptionId_key" ON "GroupSubscription"("stripeSubscriptionId");
+CREATE UNIQUE INDEX "GroupSubscription_stripeCheckoutSessionId_key" ON "GroupSubscription"("stripeCheckoutSessionId");
 
 -- AddForeignKey
 ALTER TABLE "MediaAsset" ADD CONSTRAINT "MediaAsset_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
