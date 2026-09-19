@@ -8,6 +8,8 @@ on:
 permissions:
   contents: write
 
+# Temporary bootstrap; removed after lockfile update.
+
 jobs:
   lock:
     if: github.ref == 'refs/heads/feat/release-ready-media-billing-20260919'
