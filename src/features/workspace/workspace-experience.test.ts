@@ -20,7 +20,7 @@ vi.mock("@/app/(app)/app/actions", () => ({
 }));
 vi.mock("@/lib/db", () => {
   const item = { id: "item-1", name: "Pavillon", totalQuantity: 2, location: "Vereinsheim", description: "Für unser Sommerfest", active: true, reservations: [] };
-  const reservation = { id: "reservation-1", itemId: item.id, item, userId: "user-1", user: { id: "user-1", name: "Anna" }, quantity: 1, status: "PENDING", purpose: "Sommerfest", returnNote: null, startsAt: new Date("2026-10-01T08:00:00Z"), endsAt: new Date("2026-10-02T16:00:00Z") };
+  const reservation = { id: "reservation-1", itemId: item.id, item, userId: "user-1", user: { id: "user-1", name: "Anna" }, quantity: 1, status: "PENDING", purpose: "Sommerfest", returnNote: null, createdAt: new Date("2026-09-01T08:00:00Z"), updatedAt: new Date("2026-09-01T08:00:00Z"), approvedAt: null, handedOutAt: null, returnedAt: null, startsAt: new Date("2026-10-01T08:00:00Z"), endsAt: new Date("2026-10-02T16:00:00Z") };
   return { db: {
     item: { findMany: async () => [item], count: async () => 1 },
     reservation: { findMany: vi.fn(async () => [reservation]), count: vi.fn(async () => 1) },
@@ -103,4 +103,15 @@ describe("workspace role, language and history boundaries",()=>{
     await ReservationsPage({searchParams:Promise.resolve({filter:"mine"})});
     expect(db.reservation.findMany).toHaveBeenLastCalledWith(expect.objectContaining({where:{groupId:"group-1",userId:"user-1"}}));
   });
+});
+
+
+it("matches the approved dense dashboard composition with real group data", async () => {
+  const html=renderToStaticMarkup(await Dashboard({searchParams:Promise.resolve({})}));
+  expect(html).toContain('data-concept="dashboard"');
+  expect(html).toContain("Schnellaktionen");
+  expect(html).toContain("Unsere Gegenst\u00e4nde");
+  expect(html).toContain("Ausleihkalender");
+  expect(html).toContain("Nutzung der letzten 6 Monate");
+  expect(html).not.toContain("CO\u2082");
 });

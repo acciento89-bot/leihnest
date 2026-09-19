@@ -1,0 +1,13 @@
+import type { Metadata } from "next";
+import Image from "next/image";
+import { SiteHeader, SiteFooter } from "@/components/design/site-frame";
+import { photoCredits } from "@/components/design/photo-credits";
+import "@/components/design/site.css";
+export const metadata:Metadata={title:"Bildnachweise",robots:{index:false,follow:false}};
+export default async function Credits({searchParams}:{searchParams:Promise<{lang?:string}>}){
+  const locale=(await searchParams).lang==="en"?"en":"de";
+  return <div className="concept-site" lang={locale}><SiteHeader locale={locale} auth switchHrefs={{de:"/bildnachweise",en:"/bildnachweise?lang=en"}}/><main className="nest-credits"><h1>{locale==="de"?"Bildnachweise":"Image credits"}</h1><p>{locale==="de"?"Die Gegenstandsbilder sind echte, lizenzierte Fotografien. Im Mitgliederbereich dienen sie als Symbolfotos, nicht als Fotos eures eigenen Bestands.":"The item images are licensed photographs. In the member area they are illustrative photos, not photographs of your own collection."}</p>
+    <div>{photoCredits.map(photo=><article key={photo.file}><Image src={`/images/leihnest/${photo.file}`} width={600} height={450} alt={photo.title} unoptimized/><div><h2>{photo.title}</h2><p>{photo.author}</p><a href={photo.source} rel="noreferrer">{locale==="de"?"Original und Urheberangaben":"Original and attribution"}</a><a href={photo.licenseUrl} rel="noreferrer">{photo.license}</a><p>{locale==="de"?"Bearbeitung: Ausschnitt, Gr\u00f6\u00dfenanpassung und WebP-Konvertierung durch LeihNest. Die bearbeitete Bilddatei steht unter der oben angegebenen Lizenz.":"Adaptation: cropping, resizing and WebP conversion by LeihNest. The adapted image is provided under the license shown above."}</p></div></article>)}</div>
+    <section><h2>{locale==="de"?"Gestalterische Konzeptmotive":"Decorative concept artwork"}</h2><p>{locale==="de"?"Gartenszene, Blattmotive und Nest-Zeichen stammen aus den vom Projektinhaber bereitgestellten KI-Konzeptvorlagen. Es wurden dekorative Ausschnitte ohne Bedienelemente verwendet. Diese Motive zeigen keine reale Kundengruppe und werden nicht als authentische Fotografien ausgegeben.":"The garden scene, leaves and nest mark come from AI concept artwork supplied by the project owner. Decorative areas without interface controls are used. These motifs do not depict an actual customer group and are not represented as authentic photographs."}</p><p>{locale==="de"?"Abgebildete Marken geh\u00f6ren ihren jeweiligen Inhabern. Es wird keine Zusammenarbeit oder Empfehlung durch die Hersteller behauptet.":"Depicted brands belong to their respective owners. No manufacturer partnership or endorsement is implied."}</p></section>
+  </main><SiteFooter locale={locale}/></div>;
+}
