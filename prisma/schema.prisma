@@ -12,6 +12,7 @@ enum GroupRole {
   ADMIN
   MEMBER
 }
+
 enum ReservationStatus {
   PENDING
   APPROVED
@@ -19,6 +20,17 @@ enum ReservationStatus {
   HANDED_OUT
   RETURNED
   CANCELLED
+}
+
+enum MediaKind {
+  PROFILE
+  GROUP
+  ITEM
+}
+
+enum BillingInterval {
+  MONTH
+  YEAR
 }
 
 model User {
@@ -35,6 +47,7 @@ model User {
   invitations   Invitation[] @relation("InvitationCreator")
   itemsCreated  Item[]       @relation("ItemCreator")
   reservations  Reservation[]
+  media         MediaAsset[]
 }
 
 model Session {
@@ -88,6 +101,8 @@ model Group {
   invitations  Invitation[]
   items        Item[]
   reservations Reservation[]
+  media        MediaAsset[]
+  subscription GroupSubscription?
 }
 
 model Membership {
@@ -131,6 +146,7 @@ model Item {
   group           Group         @relation(fields: [groupId], references: [id], onDelete: Cascade)
   createdBy       User          @relation("ItemCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
   reservations    Reservation[]
+  media           MediaAsset[]
   @@index([groupId, active])
 }
 
@@ -158,3 +174,49 @@ model Reservation {
   @@index([groupId, status])
 }
 
+model MediaAsset {
+  id           String    @id @default(cuid())
+  kind         MediaKind
+  storageKey   String    @unique
+  mimeType     String    @default("image/webp")
+  sourceBytes  Int
+  sourceWidth  Int
+  sourceHeight Int
+  position     Int       @default(0)
+  userId       String?
+  groupId      String?
+  itemId       String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  user         User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group        Group?    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  item         Item?     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@index([userId, kind])
+  @@index([groupId, kind])
+  @@index([itemId, position])
+}
+
+model GroupSubscription {
+  id                   String           @id @default(cuid())
+  groupId              String           @unique
+  stripeCustomerId     String           @unique
+  stripeSubscriptionId String?          @unique
+  stripePriceId        String?
+  stripeCheckoutSessionId String?       @unique
+  stripeCheckoutExpiresAt DateTime?
+  interval             BillingInterval?
+  status               String
+  currentPeriodEnd     DateTime?
+  cancelAtPeriodEnd    Boolean          @default(false)
+  stripeUpdatedAt      DateTime?
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+  group                Group            @relation(fields: [groupId], references: [id], onDelete: Cascade)
+}
+
+model ProcessedStripeEvent {
+  id         String   @id
+  stripeType String
+  createdAt  DateTime @default(now())
+}

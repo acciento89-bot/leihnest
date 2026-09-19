@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
@@ -17,7 +18,7 @@ export default async function MembersPage({searchParams}:MembersPageProps){
   if(!membership)return <NoGroup locale={locale}/>;
   const manage=canInvite(membership.role);
   const [members,invitations]=await Promise.all([
-    db.membership.findMany({where:{groupId:membership.groupId},include:{user:true},orderBy:{createdAt:"asc"}}),
+    db.membership.findMany({where:{groupId:membership.groupId},include:{user:{include:{media:{where:{kind:"PROFILE"},orderBy:{createdAt:"desc"},take:1}}}},orderBy:{createdAt:"asc"}}),
     manage ? db.invitation.findMany({where:{groupId:membership.groupId,acceptedAt:null,expiresAt:{gt:new Date()}},orderBy:{createdAt:"desc"},select:{id:true,email:true,role:true,expiresAt:true}}):Promise.resolve([]),
   ]);
   const inviteToken=params.invite && /^[a-zA-Z0-9_-]{20,200}$/.test(params.invite) ? params.invite : null;
@@ -26,7 +27,7 @@ export default async function MembersPage({searchParams}:MembersPageProps){
     {manage && <details id="new-invitation" className="ws-card ws-disclosure" open={params.new==="1" || !!params.error}><summary>{t.invite}</summary><ActionForm action={createInvitationAction} locale={locale}><div className="ws-form-grid"><Field label={t.email}><input type="email" name="email" required maxLength={254} placeholder="name@example.com" autoComplete="off"/></Field><Field label={t.role}><select name="role" defaultValue="MEMBER"><option value="MEMBER">{t.roles.MEMBER}</option><option value="ADMIN">{t.roles.ADMIN}</option></select></Field></div><p className="ws-muted">{t.invitationInfo}</p><div><SubmitButton locale={locale}>{t.createInvite}</SubmitButton></div></ActionForm></details>}
     {manage && inviteToken && <CopyInvitation path={`/invite/${inviteToken}`} locale={locale}/>}
     <div className="ws-section-title"><h2>{members.length} {t.members}</h2><span className="ws-badge"><Icon name="shield"/>{t.privateGroup}</span></div>
-    <div className="ws-list">{members.map(member=><article className="ws-card ws-member" key={member.id}><span className="ws-avatar" aria-hidden="true">{initials(member.user.name)}</span><div className="ws-member-info"><h2>{member.user.name}{member.userId===session.user.id && <span className="ws-muted"> ({t.you})</span>}</h2><p>{member.user.email}</p></div><span className="ws-badge">{t.roles[member.role]}</span></article>)}</div>
+    <div className="ws-list">{members.map(member=><article className="ws-card ws-member" key={member.id}>{member.user.media[0]?<img className="ws-avatar ws-private-avatar" src={`/api/media/${member.user.media[0].id}/thumb`} alt=""/>:<span className="ws-avatar" aria-hidden="true">{initials(member.user.name)}</span>}<div className="ws-member-info"><h2>{member.user.name}{member.userId===session.user.id && <span className="ws-muted"> ({t.you})</span>}</h2><p>{member.user.email}</p></div><span className="ws-badge">{t.roles[member.role]}</span></article>)}</div>
     <p className="ws-note">{t.rolesHint}</p>
     {manage && invitations.length>0 && <section className="ws-section"><div className="ws-section-title"><h2>{t.pendingInvites}</h2></div><div className="ws-list">{invitations.map(invitation=><article className="ws-card ws-member" key={invitation.id}><span className="ws-action-icon"><Icon name="people"/></span><div className="ws-member-info"><h2>{invitation.email}</h2><p>{t.expires}: <LocalTime value={invitation.expiresAt.toISOString()} locale={locale}/></p></div><span className="ws-badge">{t.roles[invitation.role]}</span></article>)}</div></section>}
   </section>;

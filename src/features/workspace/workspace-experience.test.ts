@@ -19,13 +19,15 @@ vi.mock("@/app/(app)/app/actions", () => ({
   updateProfileAction: vi.fn(), updateGroupAction: vi.fn(), setLanguageAction: vi.fn(),
 }));
 vi.mock("@/lib/db", () => {
-  const item = { id: "item-1", name: "Pavillon", totalQuantity: 2, location: "Vereinsheim", description: "Für unser Sommerfest", active: true, reservations: [] };
+  const item = { id: "item-1", name: "Pavillon", totalQuantity: 2, location: "Vereinsheim", description: "Für unser Sommerfest", active: true, reservations: [], media: [] };
   const reservation = { id: "reservation-1", itemId: item.id, item, userId: "user-1", user: { id: "user-1", name: "Anna" }, quantity: 1, status: "PENDING", purpose: "Sommerfest", returnNote: null, createdAt: new Date("2026-09-01T08:00:00Z"), updatedAt: new Date("2026-09-01T08:00:00Z"), approvedAt: null, handedOutAt: null, returnedAt: null, startsAt: new Date("2026-10-01T08:00:00Z"), endsAt: new Date("2026-10-02T16:00:00Z") };
   return { db: {
     item: { findMany: async () => [item], count: async () => 1 },
     reservation: { findMany: vi.fn(async () => [reservation]), count: vi.fn(async () => 1) },
-    membership: { findMany: async () => [{ id: "member-1", role: "OWNER", userId: "user-1", user: { name: "Anna", email: "anna@example.com" } }], count: async () => 1 },
+    membership: { findMany: async () => [{ id: "member-1", role: "OWNER", userId: "user-1", user: { name: "Anna", email: "anna@example.com", media: [] } }], count: async () => 1 },
     invitation: { findMany: async () => [] },
+    mediaAsset: { findFirst: async () => null },
+    groupSubscription: { findUnique: async () => null },
   } };
 });
 
