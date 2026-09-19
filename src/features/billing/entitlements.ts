@@ -3,10 +3,7 @@ import type { SubscriptionSnapshot } from "./billing-types";
 const PLUS_STATUSES = new Set(["active", "trialing", "past_due"]);
 
 export function hasPlus(subscription: SubscriptionSnapshot | null | undefined, now = new Date()) {
-  if (!subscription || !PLUS_STATUSES.has(subscription.status)) return false;
-  if (!subscription.currentPeriodEnd) {
-    return subscription.status === "active" || subscription.status === "trialing";
-  }
+  if (!subscription || !PLUS_STATUSES.has(subscription.status) || !subscription.currentPeriodEnd) return false;
   return subscription.currentPeriodEnd.getTime() > now.getTime();
 }
 
