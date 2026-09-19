@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = "https://leihnest.de";
-  return ["", "/en", "/kontakt", "/impressum", "/datenschutz"].map((path) => ({
+  return ["", "/en", "/funktionen", "/preise", "/en/features", "/en/pricing", "/kontakt", "/impressum", "/datenschutz"].map((path) => ({
     url: `${base}${path}`,
     lastModified: new Date(),
     changeFrequency: path === "" ? "weekly" : "monthly",

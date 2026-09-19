@@ -91,6 +91,17 @@ export const homeCopy = {
       ]
     ],
     "learn": "Mehr erfahren",
+    "pricingEyebrow": "KOSTENLOS STARTEN. PLUS OPTIONAL.",
+    "pricingTitle": "Free bleibt frei. Plus gibt euch mehr.",
+    "pricingIntro": "LeihNest funktioniert dauerhaft kostenlos. Wenn eure Gruppe mehr Bilder, Exporte und Statistiken braucht, könnt ihr jederzeit LeihNest Plus aktivieren.",
+    "freePlan": "Kostenlos",
+    "freePrice": "0 €",
+    "freeDetail": "Alle Kernfunktionen für eure Gruppe, inklusive Inventar, Reservierungen, Rückgaben sowie Profil-, Gruppen- und einem Gegenstandsbild.",
+    "plusPlan": "LeihNest Plus",
+    "plusMonthly": "4,99 € / Monat",
+    "plusYearly": "oder 39,99 € / Jahr",
+    "plusDetail": "Optional für die ganze Gruppe: bis zu fünf Bilder je Gegenstand, CSV-Exporte und erweiterte Gruppenstatistiken.",
+    "pricingCta": "Preise & Leistungen",
     "stepsEyebrow": "IN DREI SCHRITTEN ZU MEHR GEMEINSAM",
     "steps": [
       [
@@ -119,6 +130,7 @@ export const homeCopy = {
   "en": {
     "features": "Features",
     "how": "How it works",
+    "pricing": "Pricing",
     "login": "Sign in",
     "register": "Create your LeihNest",
     "eyebrow": "SHARE MORE. EXPERIENCE MORE. MAKE MORE POSSIBLE TOGETHER.",
@@ -208,6 +220,17 @@ export const homeCopy = {
       ]
     ],
     "learn": "Learn more",
+    "pricingEyebrow": "START FREE. PLUS IS OPTIONAL.",
+    "pricingTitle": "Free stays free. Plus gives your group more.",
+    "pricingIntro": "LeihNest remains usable for free. If your group needs more item photos, exports and analytics, you can upgrade to LeihNest Plus whenever it suits you.",
+    "freePlan": "Free",
+    "freePrice": "€0",
+    "freeDetail": "All core group features, including inventory, reservations, returns, profile and group images, plus one image per item.",
+    "plusPlan": "LeihNest Plus",
+    "plusMonthly": "€4.99 / month",
+    "plusYearly": "or €39.99 / year",
+    "plusDetail": "Optional for the whole group: up to five images per item, CSV exports and enhanced group analytics.",
+    "pricingCta": "Plans & pricing",
     "stepsEyebrow": "THREE STEPS TO SHARING MORE",
     "steps": [
       [

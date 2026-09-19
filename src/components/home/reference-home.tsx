@@ -3,6 +3,7 @@ import { homeCopy, type HomeLocale } from "./copy";
 import { HomeIcon, type HomeIconName } from "./icons";
 import { InventoryPreview, CalendarPreview } from "./preview";
 import "./reference-home.css";
+import "./pricing.css";
 
 const audienceIcons: HomeIconName[] = ["people", "home", "school", "church", "people", "theatre"];
 
@@ -18,6 +19,10 @@ export function ReferenceHome({ locale }: { locale: HomeLocale }) {
   const t = homeCopy[locale];
   const login = locale === "de" ? "/login" : "/login?lang=en";
   const register = locale === "de" ? "/register" : "/register?lang=en";
+  const pricing = locale === "de" ? "/preise" : "/en/pricing";
+  const featureDetails = locale === "de"
+    ? ["/funktionen#inventar", "/funktionen#reservierungen", "/funktionen#rueckgaben"]
+    : ["/en/features#inventory", "/en/features#reservations", "/en/features#returns"];
 
   return <div className="lh-home" lang={locale}>
     <a className="lh-skip" href="#home-main">{t.skip}</a>
@@ -31,7 +36,7 @@ export function ReferenceHome({ locale }: { locale: HomeLocale }) {
         <header className="lh-header">
           <Link href={locale === "de" ? "/" : "/en"} aria-label="LeihNest"><Brand /></Link>
           <nav className="lh-nav" aria-label={locale === "de" ? "Hauptnavigation" : "Main navigation"}>
-            <a href="#funktionen">{t.features}</a><a href="#ablauf">{t.how}</a>
+            <a href="#funktionen">{t.features}</a><a href="#ablauf">{t.how}</a><Link href={pricing}>{t.pricing}</Link>
           </nav>
           <div className="lh-header-right"><nav className="lh-languages" aria-label={locale === "de" ? "Sprache" : "Language"}>
             <Link href="/" lang="de" aria-current={locale === "de" ? "page" : undefined}>DE</Link>
@@ -57,7 +62,7 @@ export function ReferenceHome({ locale }: { locale: HomeLocale }) {
       <section className="lh-features" id="funktionen" aria-label={t.features}>
         {t.featuresList.map(([title, description], index) => <article key={title}>
           <span className="lh-round-icon"><HomeIcon name={( ["box", "calendar", "return"] as const )[index]} /></span>
-          <div><h2>{title}</h2><p>{description}</p><a href={`#step-${index + 1}`}>{t.learn}<HomeIcon name="arrow" /></a></div>
+          <div><h2>{title}</h2><p>{description}</p><Link href={featureDetails[index]}>{t.learn}<HomeIcon name="arrow" /></Link></div>
         </article>)}
       </section>
       <section className="lh-how" id="ablauf" aria-labelledby="how-title">
@@ -69,9 +74,30 @@ export function ReferenceHome({ locale }: { locale: HomeLocale }) {
           <span>{index + 1}</span><div><h3>{title}</h3><p>{description}</p></div>
         </article>)}</div>
       </section>
+      <section className="lh-pricing" id="preise" aria-labelledby="pricing-title">
+        <div className="lh-pricing-copy">
+          <p className="lh-eyebrow">{t.pricingEyebrow}</p>
+          <h2 id="pricing-title">{t.pricingTitle}</h2>
+          <p>{t.pricingIntro}</p>
+          <Link className="lh-button" href={pricing}>{t.pricingCta}<HomeIcon name="arrow" /></Link>
+        </div>
+        <div className="lh-pricing-cards">
+          <article>
+            <span className="lh-plan-label">{t.freePlan}</span>
+            <strong className="lh-plan-price">{t.freePrice}</strong>
+            <p>{t.freeDetail}</p>
+          </article>
+          <article className="lh-plan-plus">
+            <span className="lh-plan-label">{t.plusPlan}</span>
+            <strong className="lh-plan-price">{t.plusMonthly}</strong>
+            <small>{t.plusYearly}</small>
+            <p>{t.plusDetail}</p>
+          </article>
+        </div>
+      </section>
     </main>
     <footer className="lh-footer"><Link href={locale === "de" ? "/" : "/en"}><Brand /></Link><p>{t.footer}</p>
-      <nav aria-label={locale === "de" ? "Weitere Informationen" : "Further information"}><Link href="/datenschutz">{t.privacy}</Link>
+      <nav aria-label={locale === "de" ? "Weitere Informationen" : "Further information"}><Link href={locale === "de" ? "/funktionen" : "/en/features"}>{t.features}</Link><Link href={pricing}>{t.pricing}</Link><Link href="/datenschutz">{t.privacy}</Link>
         <Link href="/impressum">{t.legal}</Link><Link href="/kontakt">{t.help}</Link><Link href="/kontakt">{t.contact}</Link>
         <Link href={register}>{t.register}</Link></nav>
       <details className="lh-credits"><summary>{t.credits}</summary><p>{t.creditText}</p><p>{t.demoHint}</p></details>
