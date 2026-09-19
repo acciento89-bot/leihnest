@@ -109,7 +109,9 @@ describe.skipIf(!testURL)("media and billing persistence", () => {
       media.uploadItemImage(group.id,item.id,"free-owner",PNG),
     ]);
     expect(results.filter(result=>result.status==="fulfilled")).toHaveLength(1);
-    expect(results.filter(result=>result.status==="rejected")).toHaveLength(1);
+    const rejected=results.filter((result):result is PromiseRejectedResult=>result.status==="rejected");
+    expect(rejected).toHaveLength(1);
+    expect(rejected[0].reason).toMatchObject({message:"IMAGE_LIMIT"});
     expect(await client.mediaAsset.count({where:{itemId:item.id,kind:"ITEM"}})).toBe(1);
 
     const asset=await client.mediaAsset.findFirstOrThrow({where:{itemId:item.id}});
