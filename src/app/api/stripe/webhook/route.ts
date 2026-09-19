@@ -6,11 +6,18 @@ export async function POST(request:Request){
   const signature=request.headers.get("stripe-signature");
   if(!secret||!signature)return new Response(null,{status:400});
   const payload=await request.text();
+
+  let event;
   try{
-    const event=getStripe().webhooks.constructEvent(payload,signature,secret);
+    event=getStripe().webhooks.constructEvent(payload,signature,secret);
+  }catch{
+    return new Response(null,{status:400});
+  }
+
+  try{
     await applyStripeEvent(event);
     return Response.json({received:true});
   }catch{
-    return new Response(null,{status:400});
+    return new Response(null,{status:500});
   }
 }
