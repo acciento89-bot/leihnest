@@ -6,7 +6,7 @@ import sharp from "sharp";
 import { processImage, validateSourceBytes } from "./image-processor";
 import { readVariant, removeAsset, writeImageVariants } from "./media-store";
 
-const PNG = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAFElEQVR42mNk+M/AwMDAxMDAwMDAAAANHQEDasKb6QAAAABJRU5ErkJggg==","base64");
+async function validPng(){return sharp({create:{width:2,height:2,channels:3,background:{r:32,g:96,b:64}}}).png().toBuffer();}
 const dirs:string[]=[];
 
 afterEach(async()=>{await Promise.all(dirs.splice(0).map(dir=>rm(dir,{recursive:true,force:true})));});
@@ -21,7 +21,7 @@ describe("media processing",()=>{
   });
 
   it("normalizes a supported image to private WebP variants",async()=>{
-    const processed=await processImage(PNG);
+    const processed=await processImage(await validPng());
     expect(processed.mimeType).toBe("image/webp");
     expect(Object.keys(processed.variants).sort()).toEqual(["card","large","thumb"]);
     for(const [variant,max] of [["thumb",256],["card",640],["large",1600]] as const){
@@ -35,7 +35,7 @@ describe("media processing",()=>{
 
   it("writes reads and removes generated-key variants",async()=>{
     const dir=await mkdtemp(join(tmpdir(),"leihnest-media-"));dirs.push(dir);
-    const processed=await processImage(PNG);
+    const processed=await processImage(await validPng());
     const key=await writeImageVariants(processed.variants,dir);
     expect(key).toMatch(/^[0-9a-f-]{36}$/i);
     expect((await readVariant(key,"thumb",dir)).length).toBeGreaterThan(0);
