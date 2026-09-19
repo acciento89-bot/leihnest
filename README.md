@@ -4,6 +4,134 @@
 
 LeihNest is a German/English self-hosted web application for closed groups to manage shared equipment, reservations, handovers, returns and member invitations. Product domain: `leihnest.de`.
 
+## Current product status and completion roadmap
+
+LeihNest already has the core closed-group lending workflow, but the product is **not yet considered fully finished**. The remaining work is documented as a complete step-by-step roadmap so future development sessions can continue without reconstructing decisions from chat history.
+
+### Already implemented
+
+- German/English public website and authenticated workspace
+- email/password registration and login
+- PostgreSQL + Better Auth + Prisma
+- group creation and OWNER / ADMIN / MEMBER roles
+- inventory with search
+- reservations with approval, handover and return
+- hashed, email-bound invitation links
+- protected profile/group/item image uploads
+- LeihNest Plus with Stripe Checkout and Customer Portal
+- Free/Plus image limits
+- Plus CSV exports and analytics
+- Docker/Portainer deployment
+- CI, lint, typecheck, tests and production build
+
+### Still to be completed
+
+1. **Auth & account completion**
+   - email verification and resend
+   - forgot/reset password
+   - real invitation emails
+   - Google login
+   - Sign in with Apple
+   - Passkeys
+   - explicit account linking/unlinking
+   - password/email changes
+   - active session management
+   - verified account deletion
+   - optional TOTP 2FA + recovery codes
+
+2. **True multi-group support and member lifecycle**
+   - switch between multiple groups
+   - create additional groups
+   - resend/revoke invitations
+   - change roles
+   - remove members
+   - transfer ownership
+   - leave/archive/delete groups safely
+
+3. **Inventory and maintenance**
+   - categories and tags
+   - inventory/barcode fields
+   - AVAILABLE / PARTIALLY_UNAVAILABLE / OUT_OF_SERVICE / RETIRED states
+   - unavailable partial quantities
+   - maintenance, inspection, repair and damage history
+   - protected damage photos
+   - item detail pages and advanced filters
+
+4. **Reservation integrity and calendar**
+   - maintenance-aware availability preview
+   - concurrency-safe approvals
+   - edit pending reservations
+   - manager cancellation
+   - group/my/item calendar
+   - item reservation history
+
+5. **Notifications and reminders**
+   - in-app notification center
+   - email preferences
+   - reservation/member/maintenance events
+   - due-soon and overdue reminders
+   - PostgreSQL-backed queue and worker
+
+6. **QR labels and scanning**
+   - stable item QR IDs
+   - printable individual/bulk labels
+   - mobile camera scanner with manual fallback
+   - role-aware scan actions
+
+7. **Audit and activity history**
+   - inventory/reservation/member/billing/security events
+   - OWNER/ADMIN activity view
+   - personal security history
+   - append-only safe audit records
+
+8. **Privacy, export and deletion**
+   - personal data export
+   - complete owner group export
+   - privacy-safe historical records after deletion
+   - ownership-aware account deletion
+   - updated privacy disclosures
+
+9. **PWA and calendar integration**
+   - installable PWA
+   - privacy-safe offline shell
+   - reservation `.ics` downloads
+   - private revocable personal calendar feed
+
+10. **Security, operations and release hardening**
+    - security headers/CSP
+    - centralized rate limits and mutation-origin checks
+    - request IDs and redacted structured logs
+    - database-aware health and worker heartbeat
+    - coordinated PostgreSQL + upload backups
+    - real isolated restore test
+    - complete Playwright critical-path suite
+    - one-command release gate
+    - external production smoke test
+
+### Canonical roadmap documents
+
+- Product completion design: `docs/superpowers/specs/2026-09-19-leihnest-product-completion-design.md`
+- Auth/account design: `docs/superpowers/specs/2026-09-19-auth-account-completion-design.md`
+- Master implementation plan: `docs/superpowers/plans/2026-09-19-leihnest-product-completion-master.md`
+- Detailed plans: `docs/superpowers/plans/2026-09-19-01-*.md` through `2026-09-19-10-*.md`
+
+### Required execution order
+
+```text
+01 Auth & Account
+02 Multi-Group & Members
+03 Inventory & Maintenance
+04 Reservations & Calendar
+05 Notifications & Reminders
+06 QR Labels & Scan
+07 Audit & Activity
+08 Privacy & Export & Deletion
+09 PWA & Calendar Integration
+10 Security & Operations & Release
+```
+
+Each plan is written for TDD and small reviewable commits. For agentic execution, use `superpowers:subagent-driven-development` where the runtime supports real subagent dispatch; otherwise use `superpowers:executing-plans`.
+
 ## Stack
 
 Next.js 16, React 19, TypeScript, Better Auth, Prisma 7, PostgreSQL 17, Tailwind CSS, Docker and Portainer.
