@@ -113,7 +113,9 @@ LeihNest already has the core closed-group lending workflow, but the product is 
 - Product completion design: `docs/superpowers/specs/2026-09-19-leihnest-product-completion-design.md`
 - Auth/account design: `docs/superpowers/specs/2026-09-19-auth-account-completion-design.md`
 - Master implementation plan: `docs/superpowers/plans/2026-09-19-leihnest-product-completion-master.md`
+- Progress ledger: `docs/superpowers/LEIHNEST-COMPLETION-LEDGER.md`
 - Detailed plans: `docs/superpowers/plans/2026-09-19-01-*.md` through `2026-09-19-10-*.md`
+- Total roadmap size: **75 reviewable implementation tasks**
 
 ### Required execution order
 
