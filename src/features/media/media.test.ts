@@ -45,6 +45,6 @@ describe("media processing",()=>{
 
   it("never accepts a caller-supplied path as storage key",async()=>{
     const dir=await mkdtemp(join(tmpdir(),"leihnest-media-"));dirs.push(dir);
-    await expect(readVariant("../etc/passwd","thumb",dir)).rejects.toThrow("INVALID_STORAGE_KEY");
+    expect(()=>readVariant("../etc/passwd","thumb",dir)).toThrow("INVALID_STORAGE_KEY");
   });
 });
