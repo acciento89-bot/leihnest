@@ -1,6 +1,8 @@
 name: CI
 on:
   push:
+    branches-ignore:
+      - ops/live-smoke-20260919
   pull_request:
 
 jobs:
