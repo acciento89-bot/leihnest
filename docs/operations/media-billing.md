@@ -7,13 +7,13 @@ Configure these values in Portainer for the `leihnest-web` service. Do not commi
 ```text
 UPLOADS_DIR=/data/uploads
 PUBLIC_URL=https://leihnest.de
-STRIPE_PLUS_MONTHLY_PRICE_ID=<live monthly price ID>
-STRIPE_PLUS_YEARLY_PRICE_ID=<live yearly price ID>
+STRIPE_PLUS_MONTHLY_PRICE_ID=price_1UHRAhJy26xczTEtFrpBlXto
+STRIPE_PLUS_YEARLY_PRICE_ID=price_1UHRAjJy26xczTEtPFpnqDrG
 STRIPE_SECRET_KEY=<live server-side Stripe secret>
 STRIPE_WEBHOOK_SECRET=<live webhook signing secret>
 ```
 
-The two Price IDs are identifiers, not secrets. This file is updated with their real values after the LeihNest Plus product is created.
+The two Price IDs are identifiers, not secrets. The live LeihNest Plus product and both recurring prices were verified in Stripe on 19 September 2026.
 
 ## Persistent uploads
 
@@ -52,7 +52,7 @@ Verify after deployment:
 
 Account: Kamilunavo
 
-Product: LeihNest Plus
+Product: LeihNest Plus (`prod_VI1DOgYMUNoc4n`)
 
 Pricing:
 
