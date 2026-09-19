@@ -690,8 +690,8 @@ Release-Ablauf:
 
 1. Auth & Account Completion;
 2. Multi-Group + Member Lifecycle;
-3. Reservation Integrity + Calendar;
-4. Inventory Categories + Maintenance/Damage;
+3. Inventory Categories + Maintenance/Damage;
+4. Reservation Integrity + Calendar;
 5. Notifications + Reminder Worker;
 6. QR Labels + Scan Workflows;
 7. Audit + Activity History;
