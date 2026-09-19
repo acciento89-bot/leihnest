@@ -10,17 +10,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
-      - name: Download public reference photographs
+      - name: Download public product photographs
         run: |
           mkdir -p photos
-          for pair in 'projector-front|EPSON_CH-TW5400_LCD_PROJECTOR.jpg' 'projector-studio|Epson_H428B-7405.jpg' 'toolbox-alternative|Toolbox_(6788494881).jpg'; do
-            name=${pair%%|*}
-            file=${pair#*|}
-            curl --fail --location --retry 1 --max-time 30 --user-agent 'LeihNest design review' "https://commons.wikimedia.org/wiki/Special:Redirect/file/$file" -o "photos/$name.jpg" || true
-          done
+          curl --fail --location --retry 1 --max-time 30 --user-agent 'LeihNest design review' 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Optoma_HD65_-_Front.jpg' -o photos/projector-optoma.jpg
+          curl --fail --location --retry 1 --max-time 30 --user-agent 'LeihNest design review' 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Gereedschapskist_van_bouwvakker%2C_objectnr_91208-1.JPG' -o photos/toolbox-studio.jpg
           file photos/*
       - uses: actions/upload-artifact@v4
         with:
-          name: leihnest-licensed-photos-front
+          name: leihnest-final-product-photos
           path: photos/
           retention-days: 2
