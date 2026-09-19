@@ -14,8 +14,12 @@ type PriceEnvironment={
   STRIPE_PLUS_YEARLY_PRICE_ID?:string;
 };
 
-export function resolvePriceId(interval:PlanInterval,env:PriceEnvironment=process.env){
-  const id=interval==="month"?env.STRIPE_PLUS_MONTHLY_PRICE_ID:interval==="year"?env.STRIPE_PLUS_YEARLY_PRICE_ID:undefined;
+export function resolvePriceId(interval:PlanInterval,env?:PriceEnvironment){
+  const source=env ?? {
+    STRIPE_PLUS_MONTHLY_PRICE_ID:process.env.STRIPE_PLUS_MONTHLY_PRICE_ID,
+    STRIPE_PLUS_YEARLY_PRICE_ID:process.env.STRIPE_PLUS_YEARLY_PRICE_ID,
+  };
+  const id=interval==="month"?source.STRIPE_PLUS_MONTHLY_PRICE_ID:interval==="year"?source.STRIPE_PLUS_YEARLY_PRICE_ID:undefined;
   if(!id)throw new Error("STRIPE_NOT_CONFIGURED");
   return id;
 }
