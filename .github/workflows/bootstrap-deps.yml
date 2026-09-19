@@ -18,6 +18,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: feat/release-ready-media-billing-20260919
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -29,4 +30,6 @@ jobs:
           git add package.json package-lock.json
           git diff --cached --quiet && exit 0
           git commit -m "build: add media and Stripe runtime dependencies"
+          git fetch origin feat/release-ready-media-billing-20260919
+          git rebase origin/feat/release-ready-media-billing-20260919
           git push origin HEAD:feat/release-ready-media-billing-20260919
