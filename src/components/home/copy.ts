@@ -2,6 +2,7 @@ export const homeCopy = {
   "de": {
     "features": "Funktionen",
     "how": "So funktioniert\u2019s",
+    "pricing": "Preise",
     "login": "Anmelden",
     "register": "LeihNest anlegen",
     "eyebrow": "MEHR TEILEN. MEHR ERLEBEN. GEMEINSAM M\u00d6GLICH MACHEN.",
