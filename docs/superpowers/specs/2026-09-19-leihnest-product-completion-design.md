@@ -46,7 +46,8 @@ Nicht Teil dieser Roadmap:
 - Werbung;
 - Analytics-/Tracking-Dienste von Drittanbietern;
 - native iOS-/Android-App in dieser Ausbaustufe;
-- komplexe Buchhaltung oder Anlagenabschreibung.
+- komplexe Buchhaltung oder Anlagenabschreibung;
+- ein serverseitiges oeffentliches Kontaktformular: die bestehende `mailto:`-Loesung bleibt bewusst bestehen, damit anonyme Kontaktinhalte nicht zusaetzlich auf LeihNest verarbeitet/gespeichert werden.
 
 Eine installierbare PWA ist dagegen sinnvoll und Teil der Roadmap.
 
